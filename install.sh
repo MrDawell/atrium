@@ -59,12 +59,27 @@ TEMP_FILE="$(mktemp)"
 trap 'rm -f "$TEMP_FILE"' EXIT
 
 echo "Downloading atriumd binary..."
+DOWNLOAD_SUCCESS=false
+
 if command -v curl >/dev/null 2>&1; then
-    curl -fsSL -o "$TEMP_FILE" "$DOWNLOAD_URL"
+    if curl -fsSL -o "$TEMP_FILE" "$DOWNLOAD_URL"; then
+        DOWNLOAD_SUCCESS=true
+    fi
 elif command -v wget >/dev/null 2>&1; then
-    wget -qO "$TEMP_FILE" "$DOWNLOAD_URL"
+    if wget -qO "$TEMP_FILE" "$DOWNLOAD_URL"; then
+        DOWNLOAD_SUCCESS=true
+    fi
 else
     echo "Error: curl or wget is required to download the binary."
+    exit 1
+fi
+
+if [ "$DOWNLOAD_SUCCESS" = false ]; then
+    echo "Error: Failed to download the precompiled binary from $DOWNLOAD_URL."
+    echo "This is likely because the repository or release is not yet published on GitHub."
+    echo "You can build atriumd from source locally in this directory by running:"
+    echo "  cargo build --release --bin atriumd"
+    echo "And copying target/release/atriumd manually to ${INSTALL_DIR}/atriumd"
     exit 1
 fi
 

@@ -31,7 +31,16 @@ $targetPath = Join-Path $installDir "atriumd.exe"
 # 3. Download the Binary
 Write-Host "Downloading atriumd.exe..."
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -Uri $downloadUrl -OutFile $targetPath -UseBasicParsing
+try {
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $targetPath -UseBasicParsing
+} catch {
+    Write-Host "Error: Failed to download the precompiled binary from $downloadUrl." -ForegroundColor Red
+    Write-Host "This is likely because the repository or release is not yet published on GitHub." -ForegroundColor Yellow
+    Write-Host "You can build atriumd from source locally in this directory by running:" -ForegroundColor Yellow
+    Write-Host "  cargo build --release --bin atriumd" -ForegroundColor Green
+    Write-Host "And then copy the binary manually to your installation path: $targetPath" -ForegroundColor Green
+    Exit 1
+}
 
 # 4. Add to User Environment PATH permanently
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
