@@ -12,9 +12,16 @@ Instead of reading your whole repo, AI agents simply ask Atrium for a precision 
 ## 🚀 Track 1: Quick Start (For Vibe Coders)
 
 ### 1. Install Atrium Instantly
-Run the automated shell installer to download the pre-compiled native binary of `atriumd` matching your OS and architecture, and automatically initialize Python requirements:
+Run the automated installer script matching your operating system. This downloads the precompiled `atriumd` native binary, registers it to your PATH, and installs python dependencies:
+
+#### 🍎 macOS & 🐧 Linux (Bash)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/MrDawell/atrium/main/install.sh | bash
+```
+
+#### ❖ Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/MrDawell/atrium/main/install.ps1 | iex
 ```
 
 ### 2. Configure Claude Code as an MCP Server
