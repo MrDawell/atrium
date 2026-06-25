@@ -67,5 +67,18 @@ if (Get-Command python -ErrorAction SilentlyContinue) {
     Write-Host "Warning: python was not found in your PATH. Note that Python is required to run the Atrium bridge CLI and MCP server."
 }
 
+# 6. Automatically register Atrium MCP settings in editors
+Write-Host "Registering Atrium in Claude Code, Cursor, Cline, and Continue..."
+$bridgePath = Join-Path $PSScriptRoot "api\bridge.py"
+try {
+    if (Test-Path $bridgePath) {
+        Start-Process -FilePath $targetPath -ArgumentList "--register --bridge-path `"$bridgePath`"" -NoNewWindow -Wait
+    } else {
+        Start-Process -FilePath $targetPath -ArgumentList "--register" -NoNewWindow -Wait
+    }
+} catch {
+    Write-Host "Warning: Failed to execute registration configuration automatically."
+}
+
 Write-Host "=== Installation Completed Successfully! ==="
 Write-Host "You can now start the daemon by running: atriumd"

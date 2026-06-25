@@ -101,6 +101,16 @@ else
     echo "Warning: python3 not detected. The Python bridge CLI and MCP server will require python3 to run."
 fi
 
+# 6. Automatically register Atrium MCP settings in editors
+echo "Registering Atrium in Claude Code, Cursor, Cline, and Continue..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BRIDGE_PATH="${SCRIPT_DIR}/api/bridge.py"
+if [ -f "$BRIDGE_PATH" ]; then
+    "${INSTALL_DIR}/atriumd" --register --bridge-path "$BRIDGE_PATH" || true
+else
+    "${INSTALL_DIR}/atriumd" --register || true
+fi
+
 echo "=== Installation Completed Successfully! ==="
 echo "You can now run 'atriumd' to start the local background daemon."
 
