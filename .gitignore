@@ -26,3 +26,11 @@ Thumbs.db
 .vscode/
 .idea/
 .atrium/
+
+# Executable update backups and temp binaries
+*.exe.old*
+*.old
+*upgrade_tmp*
+*.log
+benchmark_runner.py
+test_token_savings.py

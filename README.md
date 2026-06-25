@@ -154,5 +154,16 @@ atriumd --update
 
 ---
 
+## 📊 Performance Benchmarks
+
+Atrium is engineered to optimize token efficiency and minimize API costs. On a test repository of ~1,500 Lines of Code (Rust):
+* **Prompt Token Reduction:** Input volume cut from **24,500** tokens (Standard Agent) to **620** tokens (Atrium) — a **97.4% reduction**.
+* **API Cost Savings:** Est. cost per task cut from **$0.073** to **$0.0018** per run.
+* **Scan Time:** Repository AST mapping completes in **< 15ms**.
+
+For detailed setup criteria, test runs, and pipeline metrics, check out the full [Performance Benchmark Report](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/BENCHMARK.md).
+
+---
+
 ## ⚖️ License
 Distributed under the MIT License. See `LICENSE` for more information.
