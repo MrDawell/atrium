@@ -6,11 +6,8 @@ import sys
 # Ensure api directory is in import search path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Handle automatic compile on the fly if needed
-try:
-    import daemon_pb2
-    import daemon_pb2_grpc
-except ImportError:
+# Handle automatic compile on import failure or stale modules (e.g. missing AddFactRequest)
+def compile_proto():
     proto_dir = os.path.dirname(os.path.abspath(__file__))
     proto_file = os.path.join(proto_dir, "daemon.proto")
     if os.path.exists(proto_file):
@@ -23,15 +20,20 @@ except ImportError:
                 f'--grpc_python_out={proto_dir}',
                 proto_file,
             ))
-            import daemon_pb2
-            import daemon_pb2_grpc
         except ImportError:
-            print("Error: Could not import 'daemon_pb2' and 'grpc_tools' is not installed.", file=sys.stderr)
-            print("Please run: pip install grpcio grpcio-tools", file=sys.stderr)
+            print("Error: grpc_tools is not installed. Please run: pip install grpcio grpcio-tools", file=sys.stderr)
             sys.exit(1)
-    else:
-        print("Error: generated proto modules not found and daemon.proto is missing.", file=sys.stderr)
-        sys.exit(1)
+
+try:
+    import daemon_pb2
+    import daemon_pb2_grpc
+    # Check if the imported proto contains the new AddFactRequest; if not, force recompile
+    _ = daemon_pb2.AddFactRequest
+except (ImportError, AttributeError):
+    compile_proto()
+    # Re-import after compile
+    import daemon_pb2
+    import daemon_pb2_grpc
 
 import grpc
 
@@ -46,6 +48,20 @@ def run_cli_index(args):
         resp = stub.IndexRepository(req)
         print(f"Indexing completed: success={resp.success}")
         print(f"Indexed Symbols count: {resp.indexed_symbols}")
+        print(f"Server Message: {resp.message}")
+    except grpc.RpcError as e:
+        print(f"gRPC Error: {e.details()} (Code: {e.code()})", file=sys.stderr)
+
+def run_cli_add_fact(args):
+    stub = get_grpc_stub()
+    try:
+        req = daemon_pb2.AddFactRequest(
+            fact=args.fact,
+            scope=args.scope,
+            confidence=args.confidence
+        )
+        resp = stub.AddDurableFact(req)
+        print(f"Fact added: success={resp.success}")
         print(f"Server Message: {resp.message}")
     except grpc.RpcError as e:
         print(f"gRPC Error: {e.details()} (Code: {e.code()})", file=sys.stderr)
@@ -242,37 +258,51 @@ def run_mcp_server():
 
 def main():
     parser = argparse.ArgumentParser(description="Atrium Bridge Client / MCP Server")
-    subparsers = parser.add_subparsers(dest="command")
-
-    # Index Subcommand
-    p_index = subparsers.add_parser("index", help="Index a repository path")
-    p_index.add_argument("--path", required=True, help="Path to repository")
-
-    # Context Subcommand
-    p_context = subparsers.add_parser("context", help="Request task context")
-    p_context.add_argument("--task", required=True, help="Task description")
-    p_context.add_argument("--files", nargs="+", help="Focused file paths")
-
-    # Verify Subcommand
-    p_verify = subparsers.add_parser("verify", help="Verify proposed code patch")
-    p_verify.add_argument("--patch", required=True, help="Patch text or path to diff file")
-    p_verify.add_argument("--branch", default="main", help="Target branch name")
-
-    # MCP Server Subcommand
-    subparsers.add_parser("mcp", help="Launch bridge in Model Context Protocol (MCP) server mode")
-
+    
+    # We support either --mcp OR --action
+    parser.add_argument("--mcp", action="store_true", help="Launch bridge in Model Context Protocol (MCP) server mode")
+    parser.add_argument("--action", choices=["index", "add-fact", "get-context", "verify"], help="Action to execute")
+    
+    # Flags for various actions
+    parser.add_argument("--path", help="Path to repository (used by index)")
+    parser.add_argument("--fact", help="Fact/rule text to store (used by add-fact)")
+    parser.add_argument("--scope", default="global", help="Fact scope (used by add-fact)")
+    parser.add_argument("--confidence", type=float, default=1.0, help="Confidence score (used by add-fact)")
+    parser.add_argument("--task", help="Coding task description (used by get-context)")
+    parser.add_argument("--files", nargs="+", help="Focus file paths (optional, used by get-context)")
+    parser.add_argument("--patch", help="Patch text or path to diff file (used by verify)")
+    parser.add_argument("--branch", default="main", help="Target branch name (used by verify)")
+    
     args = parser.parse_args()
 
-    if args.command == "index":
-        run_cli_index(args)
-    elif args.command == "context":
-        run_cli_context(args)
-    elif args.command == "verify":
-        run_cli_verify(args)
-    elif args.command == "mcp":
+    if args.mcp:
         run_mcp_server()
-    else:
+        return
+
+    if not args.action:
         parser.print_help()
+        sys.exit(1)
+
+    if args.action == "index":
+        if not args.path:
+            print("Error: --path is required for index action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_index(args)
+    elif args.action == "add-fact":
+        if not args.fact:
+            print("Error: --fact is required for add-fact action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_add_fact(args)
+    elif args.action == "get-context":
+        if not args.task:
+            print("Error: --task is required for get-context action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_context(args)
+    elif args.action == "verify":
+        if not args.patch:
+            print("Error: --patch is required for verify action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_verify(args)
 
 if __name__ == "__main__":
     main()

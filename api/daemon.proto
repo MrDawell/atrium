@@ -5,6 +5,7 @@ service DaemonService {
   rpc IndexRepository(IndexRequest) returns (IndexResponse);
   rpc GetContextForTask(ContextRequest) returns (ContextResponse);
   rpc VerifyPatch(VerifyRequest) returns (VerifyResponse);
+  rpc AddDurableFact(AddFactRequest) returns (AddFactResponse);
 }
 
 message IndexRequest {
@@ -43,4 +44,15 @@ message VerifyResponse {
   string linter_output = 2;
   string test_output = 3;
   repeated string compile_errors = 4;
+}
+
+message AddFactRequest {
+  string fact = 1;
+  string scope = 2;
+  double confidence = 3;
+}
+
+message AddFactResponse {
+  bool success = 1;
+  string message = 2;
 }

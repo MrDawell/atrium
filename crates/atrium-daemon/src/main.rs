@@ -10,8 +10,8 @@ pub mod daemon {
 
 use daemon::daemon_service_server::{DaemonService, DaemonServiceServer};
 use daemon::{
-    ContextFile, ContextRequest, ContextResponse, IndexRequest, IndexResponse, VerifyRequest,
-    VerifyResponse,
+    AddFactRequest, AddFactResponse, ContextFile, ContextRequest, ContextResponse, IndexRequest,
+    IndexResponse, VerifyRequest, VerifyResponse,
 };
 
 // Import workspace crates
@@ -212,6 +212,32 @@ impl DaemonService for AtriumDaemon {
             linter_output: ver_res.linter_output,
             test_output: ver_res.test_output,
             compile_errors: ver_res.compile_errors,
+        }))
+    }
+
+    async fn add_durable_fact(
+        &self,
+        request: Request<AddFactRequest>,
+    ) -> Result<Response<AddFactResponse>, Status> {
+        let req = request.into_inner();
+        println!(
+            "Atriumd: Adding durable fact: '{}' for scope: '{}'",
+            req.fact, req.scope
+        );
+
+        if let Err(e) = self
+            .store
+            .add_durable_fact(&req.fact, &req.scope, req.confidence)
+        {
+            return Err(Status::internal(format!(
+                "Database fact insertion failure: {}",
+                e
+            )));
+        }
+
+        Ok(Response::new(AddFactResponse {
+            success: true,
+            message: "Fact successfully registered in localized MemoryStore.".into(),
         }))
     }
 }

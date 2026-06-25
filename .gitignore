@@ -1,0 +1,28 @@
+# Rust build artifacts
+target/
+
+# Local databases and SQLite journals
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Generated Python protobuf modules (compiled on-the-fly)
+api/*_pb2.py
+api/*_pb2_grpc.py
+
+# Python byte code / caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+
+# System / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.atrium/
