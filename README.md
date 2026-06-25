@@ -7,19 +7,55 @@ Atrium fixes this. It is a headless, lightning-fast background daemon written in
 
 Instead of reading your whole repo, AI agents simply ask Atrium for a precision context slice.
 
-## ⚡ Features
-🧠 Durable Repository Memory: Saves explicit project rules, invariants, and hidden architectural conventions (e.g., "Never use external encryption wrappers here") inside a local, high-trust SQLite database.
+---
 
-🌳 Tree-sitter Powered Code Graphs: Parses source code changes incrementally. Maps exact symbol relationships (functions, traits, structs, imports) into a relational graph without loading full files as plain text.
+## 🚀 Track 1: Quick Start (For Vibe Coders)
 
-🔀 Context-Aware Routing: Intercepts agent context fetches to deliver only the micro-targeted snippets, neighbors, and rules required for the active task.
+### 1. Install Atrium Instantly
+Run the automated shell installer to download the pre-compiled native binary of `atriumd` matching your OS and architecture, and automatically initialize Python requirements:
+```bash
+curl -fsSL https://raw.githubusercontent.com/MrDawell/atrium/main/install.sh | bash
+```
 
-🛡️ Asynchronous Verification Pipeline: Spawns sandbox subprocesses (cargo check, cargo test, cargo clippy) to deterministically validate an agent's patch before it suggests it to the human reviewer.
+### 2. Configure Claude Code as an MCP Server
+To integrate Atrium's deep context engine directly into your daily terminal workflow, register the bridge script inside your local Claude MCP configuration file (typically at `~/.config/claude/mcp.json` or your system equivalent):
 
-`atrium_memory.db` file.
-🗄️ Multi-Project Isolation: Designed explicitly for developers hopping between codebases. Databases are project-scoped and live locally within each repository (.atrium/atrium_memory.db). Your project's brain moves with your code.
+```json
+{
+  "mcpServers": {
+    "atrium": {
+      "command": "python",
+      "args": ["/absolute/path/to/atrium/api/bridge.py", "--mcp"]
+    }
+  }
+}
+```
 
-## 🛠️ Architecture
+### 3. Basic Terminal Loop
+Start the background daemon once inside any repository root folder:
+```bash
+$ atriumd
+# [Atrium] Daemon active and listening on 127.0.0.1:50051
+# [Atrium] Initialized localized database file: atrium_memory.db
+```
+
+Interact with your code using the bridge CLI or let your connected MCP tool handle requests natively:
+```bash
+# Build the initial structural AST graph and file hashes
+$ python api/bridge.py --action index --path .
+
+# Inject a durable, long-term project-scoped architectural rule
+$ python api/bridge.py --action add-fact --fact "Always use standard library errors, do not use the anyhow crate" --scope "global"
+
+# Request a precision prompt context bundle for a task
+$ python api/bridge.py --action get-context --task "Fix routing handlers inside src/auth.rs"
+```
+
+---
+
+## 🛠️ Track 2: Building From Source (For Core Developers)
+
+### Architecture Overview
 ```
                ┌────────────────────────────────────────────────────────┐
                │                    TERMINAL INTERACTION                │
@@ -50,59 +86,37 @@ Instead of reading your whole repo, AI agents simply ask Atrium for a precision 
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
-1. Build and Install the Core Daemon
-Compile the high-performance Rust server binary from source:
+### Workspace Layout
+Atrium is organized as a Cargo workspace:
+- [api/daemon.proto](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/daemon.proto): Protocol Buffers interface contract.
+- [crates/atrium-core-graph](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-graph/): Handles Tree-sitter AST parsing and symbol graph construction.
+- [crates/atrium-core-memory](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-memory/): Manages persistent SQLite storage (`atrium_memory.db`) for files, hashes, symbols, and durable facts/rules.
+- [crates/atrium-core-verify](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-verify/): Runs tests, linters, and checkers asynchronously in sub-processes.
+- [crates/atrium-daemon](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-daemon/): The central gRPC IPC server (`atriumd`) coordinating memory and verifier layers.
+- [api/bridge.py](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/bridge.py): Python client bridge supporting CLI utilities and Model Context Protocol (MCP) server execution.
 
-```bash
-git clone https://github.com/yourusername/atrium.git
-cd atrium
-cargo build --release --bin atriumd
-sudo cp target/release/atriumd /usr/local/bin/
-```
+### Building manually from source
+Ensure you have the Rust toolchain installed (via [rustup](https://rustup.rs/)) and a Protocol Buffers compiler (`protoc`) in your system path.
 
-2. Set Up the Python Translator Layer
-Install the lightweight dependency hooks required to translate gRPC payloads and standard input streams:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/MrDawell/atrium.git
+   cd atrium
+   ```
+2. **Build the Rust workspace binaries:**
+   ```bash
+   cargo build --release --bin atriumd
+   ```
+3. **Move the executable to your binary path:**
+   ```bash
+   sudo cp target/release/atriumd /usr/local/bin/
+   ```
+4. **Compile the Python bridge protobuf files manually:**
+   ```bash
+   python -m grpc_tools.protoc -Iapi --python_out=api --grpc_python_out=api api/daemon.proto
+   ```
 
-```bash
-pip install grpcio grpcio-tools
-```
-
-3. Connect to Claude Code as an MCP Server
-To integrate Atrium's deep context engine directly into your daily terminal workflow, register the bridge script inside your local Claude MCP configuration file (typically at `~/.config/claude/mcp.json` or your system equivalent):
-
-```json
-{
-  "mcpServers": {
-    "atrium": {
-      "command": "python",
-      "args": ["/absolute/path/to/atrium/api/bridge.py", "--mcp"]
-    }
-  }
-}
-```
-
-## 💻 Basic Terminal Loop
-Wake up the background daemon once inside any repository root folder:
-
-```bash
-$ atriumd
-# [Atrium] Daemon active and listening on 127.0.0.1:50051
-# [Atrium] Initialized localized database file: ./.atrium/atrium_memory.db
-```
-
-In a second window, interact with your code using the bridge CLI or let your connected MCP tool handle requests natively:
-
-```bash
-# Build the initial structural AST graph and file hashes
-$ python api/bridge.py --action index --path .
-
-# Inject a durable, long-term project-scoped architectural rule
-$ python api/bridge.py --action add-fact --fact "Always use standard library errors, do not use the anyhow crate" --scope "global"
-
-# Request a precision prompt context bundle for a task
-$ python api/bridge.py --action get-context --task "Fix routing handlers inside src/auth.rs"
-```
+---
 
 ## ⚖️ License
 Distributed under the MIT License. See `LICENSE` for more information.
