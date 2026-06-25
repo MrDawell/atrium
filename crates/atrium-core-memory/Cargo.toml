@@ -1,0 +1,9 @@
+[package]
+name = "atrium-core-memory"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+atrium-core-graph = { path = "../atrium-core-graph" }
+rusqlite = { workspace = true }
+tokio = { workspace = true }

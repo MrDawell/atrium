@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/atrium-core-graph",
+    "crates/atrium-core-memory",
+    "crates/atrium-core-verify",
+    "crates/atrium-daemon",
+]
+
+[workspace.dependencies]
+tokio = { version = "1.37.0", features = ["full"] }
+tonic = "0.11.0"
+prost = "0.12.0"
+tree-sitter = "0.22.6"
+petgraph = "0.6.4"
+rusqlite = { version = "0.31.0", features = ["bundled"] }
+tonic-build = "0.11.0"

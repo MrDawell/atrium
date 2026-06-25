@@ -1,0 +1,21 @@
+[package]
+name = "atrium-daemon"
+version = "0.1.0"
+edition = "2021"
+default-run = "atriumd"
+
+[[bin]]
+name = "atriumd"
+path = "src/main.rs"
+
+[dependencies]
+atrium-core-graph = { path = "../atrium-core-graph" }
+atrium-core-memory = { path = "../atrium-core-memory" }
+atrium-core-verify = { path = "../atrium-core-verify" }
+
+tokio = { workspace = true }
+tonic = { workspace = true }
+prost = { workspace = true }
+
+[build-dependencies]
+tonic-build = { workspace = true }

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "atrium": {
+      "command": "python",
+      "args": [
+        "C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/bridge.py",
+        "mcp"
+      ],
+      "env": {}
+    }
+  }
+}

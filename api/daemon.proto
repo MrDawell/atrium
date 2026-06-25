@@ -1,0 +1,46 @@
+syntax = "proto3";
+package atrium.daemon;
+
+service DaemonService {
+  rpc IndexRepository(IndexRequest) returns (IndexResponse);
+  rpc GetContextForTask(ContextRequest) returns (ContextResponse);
+  rpc VerifyPatch(VerifyRequest) returns (VerifyResponse);
+}
+
+message IndexRequest {
+  string repo_path = 1;
+}
+
+message IndexResponse {
+  bool success = 1;
+  string message = 2;
+  uint64 indexed_symbols = 3;
+}
+
+message ContextRequest {
+  string task_description = 1;
+  repeated string focus_files = 2;
+}
+
+message ContextResponse {
+  repeated ContextFile files = 1;
+  string reasoning = 2;
+}
+
+message ContextFile {
+  string path = 1;
+  string snippet = 2;
+  double relevance_score = 3;
+}
+
+message VerifyRequest {
+  string patch_content = 1;
+  string target_branch = 2;
+}
+
+message VerifyResponse {
+  bool is_valid = 1;
+  string linter_output = 2;
+  string test_output = 3;
+  repeated string compile_errors = 4;
+}

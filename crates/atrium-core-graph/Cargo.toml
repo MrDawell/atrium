@@ -1,0 +1,9 @@
+[package]
+name = "atrium-core-graph"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tree-sitter = { workspace = true }
+tree-sitter-rust = "0.20.4"
+petgraph = { workspace = true }
