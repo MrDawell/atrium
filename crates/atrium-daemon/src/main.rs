@@ -21,7 +21,7 @@ use atrium_core_graph::CodeParser;
 use atrium_core_memory::MemoryStore;
 use atrium_core_verify::PatchVerifier;
 
-// Web assets compiled directly into the binary
+// Web assets compiled directly into the binary (Force asset rebuild)
 #[derive(rust_embed::RustEmbed)]
 #[folder = "../../ui/"]
 struct Assets;
@@ -614,7 +614,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 3. Start Atrium Server Engine
     let grpc_addr = "127.0.0.1:50051".parse()?;
-    let http_addr = "127.0.0.1:4040".parse()?;
+    let http_addr = "127.0.0.1:14040".parse()?;
 
     // Initialize standard single-file SQLite database
     let db_path = "atrium_memory.db";
@@ -636,7 +636,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(axum::Extension(tx));
 
     tokio::spawn(async move {
-        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:4040");
+        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:14040");
         if let Err(e) = axum::Server::bind(&http_addr)
             .serve(app.into_make_service())
             .await

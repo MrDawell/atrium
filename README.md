@@ -12,7 +12,7 @@ Instead of reading your whole repo, AI agents simply ask Atrium for a precision 
 
 ## ✨ Core Features
 
-### 📊 DevUI Dashboard (`http://localhost:4040`)
+### 📊 DevUI Dashboard (`http://localhost:14040`)
 When `atriumd` boots up, it automatically spins up a lightweight embedded web server serving a gorgeous, glassmorphic visual dashboard.
 * **Code Graph Topology:** Dynamic canvas rendering of parsed source files, modules, and their relational links.
 * **Live Memory Stream:** High-performance Server-Sent Events (SSE) log stream showing real-time indexing, facts querying, and patch verification events.
@@ -55,11 +55,11 @@ Start the background daemon inside any repository root folder:
 $ atriumd
 # [Atrium] Daemon active and listening on 127.0.0.1:50051
 # [Atrium] Durable memory layer initialized at 'atrium_memory.db'
-# [Atrium] Visual DevUI dashboard starting on http://localhost:4040
+# [Atrium] Visual DevUI dashboard starting on http://localhost:14040
 ```
 
 ### 3. Open the DevUI Visual Dashboard
-Simply open [http://localhost:4040](http://localhost:4040) in your web browser to monitor memory pools, active outlines, and live metrics stream visually.
+Simply open [http://localhost:14040](http://localhost:14040) in your web browser to monitor memory pools, active outlines, and live metrics stream visually.
 
 ---
 
@@ -94,7 +94,7 @@ Simply open [http://localhost:4040](http://localhost:4040) in your web browser t
  │  │ • Language Grammar Map  │   │ • Unique Symbol Indices │   │ • cargo test/check/lint│  │
  │  └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘  │
  └───────────────────────────────────────┬─────────────────────────────────────────────────┘
-                                         │  (Port 4040)
+                                         │  (Port 14040)
                                          ▼
                         ┌─────────────────────────────────┐
                         │      Embedded DevUI Web App     │

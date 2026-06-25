@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atrium — Frictionless Memory & Verification for AI Agents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030712;
+            --surface: rgba(17, 24, 39, 0.5);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --secondary: #8b5cf6;
+            --secondary-glow: rgba(139, 92, 246, 0.4);
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(3, 7, 18, 1) 0%, rgba(3, 7, 18, 0.9) 100%);
+            background-attachment: fixed;
+            line-height: 1.6;
+        }
+
+        /* Header / Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 80px;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--surface-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(3, 7, 18, 0.7);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 3px;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #059669);
+            color: #022c22;
+            border: none;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--surface-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            gap: 6px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: #a78bfa;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 64px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 30%, #a3a3a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 760px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-glow), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.2;
+        }
+
+        .feature-card:nth-child(2)::before {
+            background: linear-gradient(135deg, var(--secondary-glow), transparent 40%);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .feature-card:nth-child(2) .feature-icon {
+            color: var(--secondary);
+        }
+
+        .feature-card:nth-child(3) .feature-icon {
+            color: #3b82f6;
+        }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .feature-text {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Interactive Simulator Section */
+        .simulator-section {
+            background: rgba(17, 24, 39, 0.3);
+            border-top: 1px solid var(--surface-border);
+            border-bottom: 1px solid var(--surface-border);
+            padding: 100px 40px;
+        }
+
+        .simulator-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .sim-info-title {
+            font-family: var(--font-display);
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .sim-info-text {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .playground {
+            background: #090d16;
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .playground-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 14px;
+        }
+
+        .playground-title {
+            font-size: 13px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .playground-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid var(--surface-border);
+        }
+
+        .playground-tab {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            color: var(--text-muted);
+            background: transparent;
+        }
+
+        .playground-tab.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+
+        .terminal-screen {
+            background: #02040a;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: #d1d5db;
+            height: 220px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.02);
+            margin-bottom: 20px;
+        }
+
+        .metric-visuals {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-num {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .metric-num.wasted {
+            color: #ef4444;
+        }
+
+        .metric-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .sim-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+            grid-column: span 3;
+        }
+
+        .sim-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sim-progress-fill.wasted {
+            background: #ef4444;
+        }
+
+        /* Integration Section */
+        .installer-cta {
+            max-width: 900px;
+            margin: 120px auto;
+            padding: 60px 40px;
+            background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%), var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .cta-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .cta-desc {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            font-size: 15px;
+        }
+
+        .command-box {
+            background: #02040a;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+        }
+
+        .command-text {
+            color: #34d399;
+            user-select: all;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--surface-border);
+            padding: 40px 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            background: #02040a;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-dot"></div>
+            ATRIUM
+        </div>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#demo">Interactive Simulator</a>
+            <a href="#install">Quick Install</a>
+        </nav>
+        <a class="btn btn-primary" href="#install">Get Started</a>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-badge">Now Open Source</div>
+            <h1>
+                Stop Flooding Context.<br>
+                <span>Zero-Token-Waste</span> Memory for AI Agents.
+            </h1>
+            <p class="hero-desc">
+                Atrium is a headless background daemon that maps repository AST symbols, aggregates active design invariants, and serves precision context slices so agents solve tasks with 95% fewer tokens.
+            </p>
+            <div class="hero-ctas">
+                <a class="btn btn-primary" href="#install">Download Now</a>
+                <a class="btn btn-secondary" href="#demo">See the Math</a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h3 class="feature-title">AST Code Graph</h3>
+                <p class="feature-text">
+                    Incremental parser leveraging Tree-sitter. Instantly maps function signatures, struct layouts, and trait boundaries upon file edits.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">Durable Local Memory</h3>
+                <p class="feature-text">
+                    Local SQLite fact storage. Saves codebase rules, styles, and guidelines without sending sensitive architectural configurations off-device.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">DevUI Visualizer</h3>
+                <p class="feature-text">
+                    An embedded Axum dashboard. Watch agent requests, index structures, metrics outputs, and active scopes live at localhost:14040.
+                </p>
+            </div>
+        </section>
+
+        <!-- Simulator Section -->
+        <section class="simulator-section" id="demo">
+            <div class="simulator-container">
+                <div>
+                    <h2 class="sim-info-title">Atrium cuts context usage by up to 95%.</h2>
+                    <p class="sim-info-text">
+                        Standard tools read your whole files or folders over and over for every minor refactoring task. Atrium queries specific AST outline slices and durable memories, giving your LLM exactly what it needs to output correct code.
+                    </p>
+                    <p class="sim-info-text">
+                        <strong>Toggle the simulator tabs</strong> to see how standard agents differ from Atrium-equipped agents when coding.
+                    </p>
+                </div>
+
+                <div class="playground">
+                    <div class="playground-header">
+                        <div class="playground-title">
+                            <span style="color:#ef4444" id="statusDot">●</span> Agent context visualizer
+                        </div>
+                        <div class="playground-tabs">
+                            <button class="playground-tab active" onclick="runSim('standard', this)">Standard Agent</button>
+                            <button class="playground-tab" onclick="runSim('atrium', this)">Atrium Daemon</button>
+                        </div>
+                    </div>
+
+                    <div class="terminal-screen" id="termOutput">
+$ claude-code "add fact memory check"
+Scanning directory...
+[WARN] Found 14 large source files.
+Reading crates/atrium-daemon/src/main.rs (22KB)...
+Reading crates/atrium-core-memory/src/lib.rs (12KB)...
+Reading api/bridge.py (13KB)...
+Sending full files contents to LLM prompt window...
+                    </div>
+
+                    <div class="metric-visuals">
+                        <div class="metric-item">
+                            <div class="metric-num wasted" id="metTokens">24,500</div>
+                            <div class="metric-lbl">Prompt Tokens</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-num" id="metCost">$0.073</div>
+                            <div class="metric-lbl">Est. Cost</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-num" id="metSavings">0%</div>
+                            <div class="metric-lbl">Token Savings</div>
+                        </div>
+
+                        <div class="sim-progress-bar">
+                            <div class="sim-progress-fill wasted" id="progressBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installer CTA Section -->
+        <section class="installer-cta" id="install">
+            <h2 class="cta-title">Install Atrium Instantly</h2>
+            <p class="cta-desc">
+                Get up and running with a single copy-paste command. The native installer automatically registers the MCP configurations in Claude, Cursor, Cline, and Continue.
+            </p>
+
+            <div style="margin-bottom: 30px;">
+                <p style="font-size: 13px; font-weight:600; color: var(--text-muted); margin-bottom: 8px;">🍎 macOS & 🐧 Linux (Bash)</p>
+                <div class="command-box">
+                    <span class="command-text" id="bashCmd">curl -fsSL https://raw.githubusercontent.com/MrDawell/atrium/main/install.sh | bash</span>
+                    <button class="copy-btn" onclick="copyText('bashCmd', this)">Copy</button>
+                </div>
+            </div>
+
+            <div>
+                <p style="font-size: 13px; font-weight:600; color: var(--text-muted); margin-bottom: 8px;">❖ Windows (PowerShell)</p>
+                <div class="command-box">
+                    <span class="command-text" id="psCmd">irm https://raw.githubusercontent.com/MrDawell/atrium/main/install.ps1 | iex</span>
+                    <button class="copy-btn" onclick="copyText('psCmd', this)">Copy</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div>© 2026 Atrium Project. Distributed under the MIT License.</div>
+        <div class="footer-links">
+            <a href="https://github.com/MrDawell/atrium">GitHub</a>
+            <a href="#features">Features</a>
+        </div>
+    </footer>
+
+    <script>
+        const simData = {
+            standard: {
+                statusDotColor: '#ef4444',
+                tokens: '24,500',
+                cost: '$0.073',
+                savings: '0%',
+                progress: '100%',
+                class: 'wasted',
+                logs: `$ claude-code "add fact memory check"\nScanning directory...\n[WARN] Found 14 large source files.\nReading crates/atrium-daemon/src/main.rs (22KB)...\nReading crates/atrium-core-memory/src/lib.rs (12KB)...\nReading api/bridge.py (13KB)...\nSending full files contents to LLM prompt window...\n>> Prompt size: 24,500 tokens. (Context window flooded)`
+            },
+            atrium: {
+                statusDotColor: '#10b981',
+                tokens: '620',
+                cost: '$0.001',
+                savings: '97.4%',
+                progress: '2.5%',
+                class: '',
+                logs: `$ claude-code "add fact memory check"\n[Atrium] Daemon detected on port 50051.\n[Atrium] Fetching file outlines & global guidelines...\n>> Outline crates/atrium-daemon/src/main.rs (14 symbols)\n>> Outline crates/atrium-core-memory/src/lib.rs (8 symbols)\n>> Global Invariant: "Always use standard library errors"\nSending precision slices to LLM prompt window...\n>> Prompt size: 620 tokens. (97.4% token savings achieved)`
+            }
+        };
+
+        function runSim(mode, btn) {
+            // Toggle active tabs
+            const tabs = document.querySelectorAll('.playground-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+
+            const data = simData[mode];
+            document.getElementById('statusDot').style.color = data.statusDotColor;
+            
+            const metTokens = document.getElementById('metTokens');
+            const metCost = document.getElementById('metCost');
+            const metSavings = document.getElementById('metSavings');
+            const progressBar = document.getElementById('progressBar');
+            const termOutput = document.getElementById('termOutput');
+
+            // Apply text
+            metTokens.innerText = data.tokens;
+            metCost.innerText = data.cost;
+            metSavings.innerText = data.savings;
+            termOutput.innerText = data.logs;
+
+            // Apply classes & widths
+            if (data.class === 'wasted') {
+                metTokens.classList.add('wasted');
+                progressBar.classList.add('wasted');
+            } else {
+                metTokens.classList.remove('wasted');
+                progressBar.classList.remove('wasted');
+            }
+            progressBar.style.width = data.progress;
+        }
+
+        function copyText(elemId, btn) {
+            const text = document.getElementById(elemId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const oldText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => {
+                    btn.innerText = oldText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
