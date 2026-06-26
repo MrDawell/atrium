@@ -36,6 +36,11 @@ A single CLI hook automatically scans and registers Atrium as an MCP server or c
 
 ## 🚀 Track 1: Quick Start (For Vibe Coders)
 
+### 🤖 AI Agent Autopilot Setup
+If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline, or Roo Code), you can copy and paste the prompt below into the chat, and the agent will configure and run everything for you autonomously:
+
+> Please clone the Atrium repository from `https://github.com/MrDawell/atrium.git`, build the atriumd daemon from source using `cargo build --release`, install Python bridge dependencies (`grpcio` and `grpcio-tools`), compile the gRPC protobuf files to python, verify everything with `cargo test`, run `atriumd` as a background task, index the repository, and register the Atrium MCP server in all active editors (Claude Code, Cursor, Cline, Roo Code, etc.).
+
 ### 1. Install Atrium Instantly
 Run the automated installer script matching your operating system. This automatically detects your system architecture (macOS x86_64/arm64, Linux x86_64/aarch64, Windows x64/ARM64), downloads the precompiled release binary, registers it to your PATH, installs Python bridge dependencies (`grpcio`, `grpcio-tools`), and triggers editor auto-registration.
 
