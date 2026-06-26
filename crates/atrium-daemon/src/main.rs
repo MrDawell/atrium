@@ -496,10 +496,15 @@ fn register_all(bridge_path: &str) -> Result<(), Box<dyn std::error::Error>> {
 const CURRENT_VERSION: &str = "0.1.0";
 
 fn get_latest_github_release() -> Result<String, Box<dyn std::error::Error>> {
+    let repo = std::env::var("ATRIUM_UPDATE_REPO").unwrap_or_else(|_| "MrDawell/atrium".to_string());
     #[cfg(windows)]
     {
+        let cmd = format!(
+            "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (Invoke-RestMethod -Uri 'https://api.github.com/repos/{}/releases/latest') | ConvertTo-Json -Depth 5",
+            repo
+        );
         let output = std::process::Command::new("powershell")
-            .args(["-Command", "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (Invoke-RestMethod -Uri 'https://api.github.com/repos/MrDawell/atrium/releases/latest') | ConvertTo-Json -Depth 5"])
+            .args(["-Command", &cmd])
             .output()?;
         if !output.status.success() {
             return Err("Failed to query github releases via PowerShell".into());
@@ -508,8 +513,9 @@ fn get_latest_github_release() -> Result<String, Box<dyn std::error::Error>> {
     }
     #[cfg(not(windows))]
     {
+        let url = format!("https://api.github.com/repos/{}/releases/latest", repo);
         let output = std::process::Command::new("curl")
-            .args(["-fsSL", "https://api.github.com/repos/MrDawell/atrium/releases/latest"])
+            .args(["-fsSL", &url])
             .output()?;
         if !output.status.success() {
             return Err("Failed to query github releases via curl".into());
@@ -573,9 +579,12 @@ fn perform_update(force: bool) -> Result<(), Box<dyn std::error::Error>> {
             ""
         };
         let binary_filename = format!("atriumd-{}-{}{}", os, arch, ext);
+        let repo = std::env::var("ATRIUM_UPDATE_REPO").unwrap_or_else(|_| "MrDawell/atrium".to_string());
         let download_url = format!(
-            "https://github.com/MrDawell/atrium/releases/download/{}/{}",
-            tag_name, binary_filename
+            "https://github.com/{}/releases/download/{}/{}",
+            repo,
+            tag_name,
+            binary_filename
         );
 
         let current_exe = std::env::current_exe()?;
@@ -800,8 +809,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("│  ▸ Port Scope  : Active Binding -> http://127.0.0.1:4040│");
     println!("└────────────────────────────────────────────────────────┘");
 
-    // Initialize standard single-file SQLite database
-    let db_path = "atrium_memory.db";
+    // Initialize standard single-file SQLite database in the isolated global home profile caching directory
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .unwrap_or_default();
+    let cache_dir = std::path::PathBuf::from(home)
+        .join(".gemini")
+        .join("antigravity-cli");
+    if !cache_dir.exists() {
+        std::fs::create_dir_all(&cache_dir)?;
+    }
+    let db_path_buf = cache_dir.join("atrium_memory.db");
+    let db_path = db_path_buf.to_str().ok_or("Failed to convert DB path to UTF-8 string")?;
     let memory_store = Arc::new(MemoryStore::new(db_path)?);
 
     // Setup SSE Broadcast Channel
