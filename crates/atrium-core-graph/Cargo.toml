@@ -7,3 +7,4 @@ edition = "2021"
 tree-sitter = { workspace = true }
 tree-sitter-rust = "0.20.4"
 petgraph = { workspace = true }
+libloading = "0.8"

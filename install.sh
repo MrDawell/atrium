@@ -5,7 +5,28 @@
 
 set -e
 
-echo "=== Atrium Installer ==="
+cat << 'EOF'
+  █████╗ ████████╗██████╗ ██████╗ ██╗   ██╗███╗   ███╗
+ ██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗██║   ██║████╗ ████║
+ ███████║   ██║   ██████╔╝██████╔╝██║   ██║██╔████╔██║
+ ██╔══██║   ██║   ██╔══██╗██╔══██╗██║   ██║██║╚██╔╝██║
+ ██║  ██║   ██║   ██║  ██║██║  ██║╚██████╔╝██║ ╚═╝ ██║
+ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝
+ ─────────────────────────────────────────────────────
+  [ v1.0.0-beta • Context Stabilization Protocol ]
+ ─────────────────────────────────────────────────────
+
+ 🤨 DETECTING AGENT TOXICITY...
+ ▸ Your AI agents have been absolutely robbing you blind.
+ ▸ It's time to stop paying a car lease every month just to copy-paste boilerplate.
+ ▸ Atrium is initializing. Get ready to save your jewelry money.
+
+ ┌────────────────────────────────────────────────────────┐
+ │  ◬  SYSTEM PROVISIONING MATRIX                         │
+ ├────────────────────────────────────────────────────────┤
+ │  [ .. ] Scanning host platform target architecture... │
+EOF
+
 
 # 1. Detect OS and Architecture
 OS="$(uname -s)"

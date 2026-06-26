@@ -1,9 +1,28 @@
-# Atrium Windows Native Installer Script
-# Supported platform: Windows (x64, ARM64)
-
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
-Write-Host "=== Atrium Windows Installer ==="
+Write-Host @"
+  █████╗ ████████╗██████╗ ██████╗ ██╗   ██╗███╗   ███╗
+ ██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗██║   ██║████╗ ████║
+ ███████║   ██║   ██████╔╝██████╔╝██║   ██║██╔████╔██║
+ ██╔══██║   ██║   ██╔══██╗██╔══██╗██║   ██║██║╚██╔╝██║
+ ██║  ██║   ██║   ██║  ██║██║  ██║╚██████╔╝██║ ╚═╝ ██║
+ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝
+ ─────────────────────────────────────────────────────
+  [ v1.0.0-beta • Context Stabilization Protocol ]
+ ─────────────────────────────────────────────────────
+
+ 🤨 DETECTING AGENT TOXICITY...
+ ▸ Your AI agents have been absolutely robbing you blind.
+ ▸ It's time to stop paying a car lease every month just to copy-paste boilerplate.
+ ▸ Atrium is initializing. Get ready to save your jewelry money.
+
+ ┌────────────────────────────────────────────────────────┐
+ │  ◬  SYSTEM PROVISIONING MATRIX                         │
+ ├────────────────────────────────────────────────────────┤
+ │  [ .. ] Scanning host platform target architecture... │
+"@
+
 
 # 1. Detect Architecture
 $arch = $env:PROCESSOR_ARCHITECTURE

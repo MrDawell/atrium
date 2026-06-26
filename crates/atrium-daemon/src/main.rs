@@ -45,8 +45,15 @@ fn visit_dirs(dir: &Path, files: &mut Vec<PathBuf>) -> std::io::Result<()> {
                     }
                 }
                 visit_dirs(&path, files)?;
-            } else if path.extension().map_or(false, |ext| ext == "rs") {
-                files.push(path);
+            } else if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                let ext_lower = ext.to_lowercase();
+                let supported = [
+                    "rs", "py", "java", "cs", "kt", "swift", "php", "rb", "lua", "pl", "r",
+                    "sol", "zig", "ex", "exs", "hs", "clj", "sh", "bash", "toml"
+                ];
+                if supported.contains(&ext_lower.as_str()) {
+                    files.push(path);
+                }
             }
         }
     }
@@ -93,7 +100,8 @@ impl DaemonService for AtriumDaemon {
             };
 
             let hash = calculate_hash(&content);
-            let symbols = match CodeParser::parse_source(&content) {
+            let extension = file.extension().and_then(|ext| ext.to_str()).unwrap_or("");
+            let symbols = match CodeParser::parse_source(&content, extension) {
                 Ok(s) => s,
                 Err(e) => {
                     eprintln!("Warning: Failed to parse AST for file {:?}: {}", file, e);
@@ -141,7 +149,7 @@ impl DaemonService for AtriumDaemon {
 
         Ok(Response::new(IndexResponse {
             success: true,
-            message: format!("Successfully indexed {} Rust source files.", files.len()),
+            message: format!("Successfully indexed {} source files.", files.len()),
             indexed_symbols: total_symbols,
         }))
     }
@@ -784,10 +792,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let http_addr_4040 = "127.0.0.1:4040".parse()?;
     let http_addr_14040 = "127.0.0.1:14040".parse()?;
 
+    println!("┌────────────────────────────────────────────────────────┐");
+    println!("│  ◬  A T R I U M   [ Daemon Engine v1.0.0-beta ]        │");
+    println!("├────────────────────────────────────────────────────────┤");
+    println!("│  ▸ Environment : Production (Local gRPC Stream)        │");
+    println!("│  ▸ Storage     : Persistent AST SQLite Graph Registry  │");
+    println!("│  ▸ Port Scope  : Active Binding -> http://127.0.0.1:4040│");
+    println!("└────────────────────────────────────────────────────────┘");
+
     // Initialize standard single-file SQLite database
     let db_path = "atrium_memory.db";
     let memory_store = Arc::new(MemoryStore::new(db_path)?);
-    println!("Atriumd: Durable memory layer initialized at '{}'", db_path);
 
     // Setup SSE Broadcast Channel
     let (tx, _rx) = broadcast::channel::<String>(100);
@@ -810,7 +825,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app_clone = app.clone();
 
     tokio::spawn(async move {
-        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:4040");
         if let Err(e) = axum::Server::bind(&http_addr_4040)
             .serve(app.into_make_service())
             .await
@@ -820,7 +834,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     tokio::spawn(async move {
-        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:14040");
         if let Err(e) = axum::Server::bind(&http_addr_14040)
             .serve(app_clone.into_make_service())
             .await
@@ -830,7 +843,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     // Start tonic gRPC Server
-    println!("Atriumd: gRPC Daemon starting on {}", grpc_addr);
 
     Server::builder()
         .add_service(DaemonServiceServer::new(daemon_service))

@@ -47,8 +47,7 @@ impl PatchVerifier {
         };
 
         // 2. Run cargo test if check succeeded
-        let mut test_output = String::new();
-        if check_success {
+        let test_output = if check_success {
             let test_child = Command::new("cargo")
                 .arg("test")
                 .output()
@@ -58,37 +57,37 @@ impl PatchVerifier {
                 Ok(output) => {
                     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
                     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-                    test_output = format!("Stdout:\n{}\nStderr:\n{}", stdout, stderr);
-                    if !output.status.success() {
+                    let success = output.status.success();
+                    if !success {
                         is_valid = false;
                     }
+                    format!("Stdout:\n{}\nStderr:\n{}", stdout, stderr)
                 }
                 Err(e) => {
                     is_valid = false;
-                    test_output = format!("Failed to spawn cargo test: {}", e);
+                    format!("Failed to spawn cargo test: {}", e)
                 }
             }
         } else {
-            test_output = "Skipped tests because compilation check failed.".to_string();
-        }
+            "Skipped tests because compilation check failed.".to_string()
+        };
 
         // 3. Run cargo clippy for linting
-        let mut linter_output = String::new();
         let clippy_child = Command::new("cargo")
             .arg("clippy")
             .output()
             .await;
 
-        match clippy_child {
+        let linter_output = match clippy_child {
             Ok(output) => {
                 let stdout = String::from_utf8_lossy(&output.stdout).to_string();
                 let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-                linter_output = format!("Stdout:\n{}\nStderr:\n{}", stdout, stderr);
+                format!("Stdout:\n{}\nStderr:\n{}", stdout, stderr)
             }
             Err(e) => {
-                linter_output = format!("Failed to spawn cargo clippy: {}", e);
+                format!("Failed to spawn cargo clippy: {}", e)
             }
-        }
+        };
 
         Ok(VerificationResult {
             is_valid,
