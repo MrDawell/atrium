@@ -6,6 +6,8 @@ service DaemonService {
   rpc GetContextForTask(ContextRequest) returns (ContextResponse);
   rpc VerifyPatch(VerifyRequest) returns (VerifyResponse);
   rpc AddDurableFact(AddFactRequest) returns (AddFactResponse);
+  rpc SearchSymbols(SearchRequest) returns (SearchResponse);
+  rpc GetPrecisionSlice(SliceRequest) returns (SliceResponse);
 }
 
 message IndexRequest {
@@ -55,4 +57,31 @@ message AddFactRequest {
 message AddFactResponse {
   bool success = 1;
   string message = 2;
+}
+
+message SearchRequest {
+  string query = 1;
+}
+
+message SymbolMatch {
+  string file_path = 1;
+  string symbol_name = 2;
+  string symbol_kind = 3;
+}
+
+message SearchResponse {
+  repeated SymbolMatch matches = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message SliceRequest {
+  string file_path = 1;
+  string task_context = 2;
+}
+
+message SliceResponse {
+  string code_slice = 1;
+  bool success = 2;
+  string message = 3;
 }

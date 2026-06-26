@@ -13,7 +13,7 @@ pub mod daemon {
 use daemon::daemon_service_server::{DaemonService, DaemonServiceServer};
 use daemon::{
     AddFactRequest, AddFactResponse, ContextFile, ContextRequest, ContextResponse, IndexRequest,
-    IndexResponse, VerifyRequest, VerifyResponse,
+    IndexResponse, VerifyRequest, VerifyResponse, SearchRequest, SearchResponse, SliceRequest, SliceResponse,
 };
 
 // Import workspace crates
@@ -107,7 +107,8 @@ impl DaemonService for AtriumDaemon {
                 .strip_prefix(repo_path)
                 .unwrap_or(file)
                 .to_string_lossy()
-                .to_string();
+                .to_string()
+                .replace('\\', "/");
 
             if let Err(e) = self.store.store_symbols(&relative_path, &hash, &symbols) {
                 return Err(Status::internal(format!("Database write failure: {}", e)));
@@ -157,7 +158,7 @@ impl DaemonService for AtriumDaemon {
                 Err(e) => return Err(Status::internal(format!("Database query error: {}", e))),
             }
         } else {
-            req.focus_files.clone()
+            req.focus_files.iter().map(|f| f.replace('\\', "/")).collect()
         };
 
         // 2. Fetch relevant facts (global ones first)
@@ -277,6 +278,106 @@ impl DaemonService for AtriumDaemon {
         Ok(Response::new(AddFactResponse {
             success: true,
             message: "Fact successfully registered in localized MemoryStore.".into(),
+        }))
+    }
+
+    async fn search_symbols(
+        &self,
+        request: Request<SearchRequest>,
+    ) -> Result<Response<SearchResponse>, Status> {
+        let req = request.into_inner();
+        println!("Atriumd: Searching symbols matching query: '{}'", req.query);
+
+        // Check if there are ANY files in the store to see if index has run
+        let indexed_files = self.store.get_indexed_files().unwrap_or_default();
+        if indexed_files.is_empty() {
+            return Ok(Response::new(SearchResponse {
+                matches: vec![],
+                success: false,
+                message: "Error: Symbol not indexed yet. Please run atrium_search_symbols first to warm the cache.".to_string(),
+            }));
+        }
+
+        let matches_res = self.store.search_symbols(&req.query);
+
+        match matches_res {
+            Ok(matches) => {
+                let mut symbol_matches = Vec::new();
+                for (file_path, symbol_name, symbol_kind) in matches {
+                    symbol_matches.push(daemon::SymbolMatch {
+                        file_path,
+                        symbol_name,
+                        symbol_kind,
+                    });
+                }
+
+                Ok(Response::new(SearchResponse {
+                    matches: symbol_matches,
+                    success: true,
+                    message: "Search completed successfully.".to_string(),
+                }))
+            }
+            Err(e) => {
+                Ok(Response::new(SearchResponse {
+                    matches: vec![],
+                    success: false,
+                    message: format!("Search failed: {}", e),
+                }))
+            }
+        }
+    }
+
+    async fn get_precision_slice(
+        &self,
+        request: Request<SliceRequest>,
+    ) -> Result<Response<SliceResponse>, Status> {
+        let req = request.into_inner();
+        let file_path = req.file_path.replace('\\', "/");
+        println!("Atriumd: Getting precision slice for file: '{}'", file_path);
+
+        // Fetch relevant rules for this file
+        let facts = self.store.get_relevant_facts(&file_path).unwrap_or_default();
+
+        // Fetch symbols for this file
+        let symbols = match self.store.get_symbols_for_file(&file_path) {
+            Ok(syms) => syms,
+            Err(e) => return Err(Status::internal(format!("Database query error: {}", e))),
+        };
+
+        if symbols.is_empty() && facts.is_empty() {
+            // Check if there are ANY files in the store to see if index has run
+            let indexed_files = self.store.get_indexed_files().unwrap_or_default();
+            if indexed_files.is_empty() {
+                return Ok(Response::new(SliceResponse {
+                    code_slice: "".to_string(),
+                    success: false,
+                    message: "Error: Symbol not indexed yet. Please run atrium_search_symbols first to warm the cache.".to_string(),
+                }));
+            }
+        }
+
+        let mut slice = format!("=== STRUCTURAL CODE SLICE FOR: {} ===\n", file_path);
+
+        if !facts.is_empty() {
+            slice.push_str("\n--- Relevant Project Rules & Architectural Invariants ---\n");
+            for (idx, fact) in facts.iter().enumerate() {
+                slice.push_str(&format!("{}. {}\n", idx + 1, fact));
+            }
+        }
+
+        slice.push_str("\n--- Symbol Signatures (AST) ---\n");
+        if symbols.is_empty() {
+            slice.push_str("// (No symbols indexed for this file)\n");
+        } else {
+            for (name, kind) in symbols {
+                slice.push_str(&format!("- {} ({})\n", name, kind));
+            }
+        }
+
+        Ok(Response::new(SliceResponse {
+            code_slice: slice,
+            success: true,
+            message: "Successfully retrieved precision slice.".to_string(),
         }))
     }
 }

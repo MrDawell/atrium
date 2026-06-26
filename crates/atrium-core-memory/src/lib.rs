@@ -143,6 +143,29 @@ impl MemoryStore {
         Ok(symbols)
     }
 
+    pub fn search_symbols(
+        &self,
+        query: &str,
+    ) -> Result<Vec<(String, String, String)>, Box<dyn std::error::Error>> {
+        let conn = self.conn.lock().map_err(|e| format!("Mutex lock error: {}", e))?;
+        let mut stmt = conn.prepare(
+            "SELECT file_path, symbol_name, symbol_kind FROM symbols
+             WHERE symbol_name LIKE ?1 OR symbol_kind LIKE ?1",
+        )?;
+
+        let search_pattern = format!("%{}%", query);
+        let rows = stmt.query_map([search_pattern], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?, row.get::<_, String>(2)?))
+        })?;
+
+        let mut matches = Vec::new();
+        for match_res in rows {
+            matches.push(match_res?);
+        }
+
+        Ok(matches)
+    }
+
     pub fn get_indexed_files(&self) -> Result<Vec<String>, Box<dyn std::error::Error>> {
         let conn = self.conn.lock().map_err(|e| format!("Mutex lock error: {}", e))?;
         let mut stmt = conn.prepare("SELECT DISTINCT file_path FROM symbols")?;

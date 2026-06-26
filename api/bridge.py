@@ -27,8 +27,8 @@ def compile_proto():
 try:
     import daemon_pb2
     import daemon_pb2_grpc
-    # Check if the imported proto contains the new AddFactRequest; if not, force recompile
-    _ = daemon_pb2.AddFactRequest
+    # Check if the imported proto contains the new SearchRequest; if not, force recompile
+    _ = daemon_pb2.SearchRequest
 except (ImportError, AttributeError):
     compile_proto()
     # Re-import after compile
@@ -151,11 +151,66 @@ def execute_mcp_tool(stub, tool_name, arguments):
             return {
                 "content": [{"type": "text", "text": output_text}]
             }
+
+        elif tool_name == "atrium_search_symbols":
+            query = arguments.get("query")
+            if not query:
+                return {"isError": True, "content": [{"type": "text", "text": "query is required"}]}
+            req = daemon_pb2.SearchRequest(query=query)
+            resp = stub.SearchSymbols(req)
+            if not resp.success:
+                return {"isError": True, "content": [{"type": "text", "text": resp.message}]}
+            
+            matches_info = []
+            for m in resp.matches:
+                matches_info.append(f"File: {m.file_path} | Name: {m.symbol_name} ({m.symbol_kind})")
+            
+            output_text = f"Matches:\n" + "\n".join(matches_info) if matches_info else "No matching symbols found."
+            return {
+                "content": [{"type": "text", "text": output_text}]
+            }
+
+        elif tool_name == "atrium_get_precision_slice":
+            file_path = arguments.get("file_path")
+            task_context = arguments.get("task_context", "")
+            if not file_path:
+                return {"isError": True, "content": [{"type": "text", "text": "file_path is required"}]}
+            req = daemon_pb2.SliceRequest(file_path=file_path, task_context=task_context)
+            resp = stub.GetPrecisionSlice(req)
+            if not resp.success:
+                return {"isError": True, "content": [{"type": "text", "text": resp.message}]}
+            return {
+                "content": [{"type": "text", "text": resp.code_slice}]
+            }
+
+        elif tool_name == "atrium_verify_patch":
+            patch_content = arguments.get("patch_diff")
+            if patch_content is None:
+                patch_content = ""
+            target_branch = arguments.get("target_branch", "main")
+            req = daemon_pb2.VerifyRequest(patch_content=patch_content, target_branch=target_branch)
+            resp = stub.VerifyPatch(req)
+            
+            output_text = f"Is Valid: {resp.is_valid}\n\nCompile Errors:\n" + "\n".join(resp.compile_errors)
+            output_text += f"\n\nLinter Output:\n{resp.linter_output}\n\nTest Output:\n{resp.test_output}"
+            return {
+                "content": [{"type": "text", "text": output_text}]
+            }
             
         else:
             return {"isError": True, "content": [{"type": "text", "text": f"Unknown tool: {tool_name}"}]}
+    except grpc.RpcError as e:
+        details = e.details() if hasattr(e, 'details') and e.details() else str(e)
+        if e.code() == grpc.StatusCode.UNAVAILABLE or "Symbol not indexed" in details or "not indexed yet" in details:
+            err_msg = "Error: Symbol not indexed yet. Please run atrium_search_symbols first to warm the cache."
+        else:
+            err_msg = f"gRPC server call failed: {details}"
+        return {"isError": True, "content": [{"type": "text", "text": err_msg}]}
     except Exception as e:
-        return {"isError": True, "content": [{"type": "text", "text": f"gRPC server call failed: {str(e)}"}]}
+        err_msg = str(e)
+        if "Symbol not indexed" in err_msg or "not indexed yet" in err_msg:
+            err_msg = "Error: Symbol not indexed yet. Please run atrium_search_symbols first to warm the cache."
+        return {"isError": True, "content": [{"type": "text", "text": f"Error: {err_msg}"}]}
 
 def run_mcp_server():
     stub = get_grpc_stub()
@@ -228,6 +283,40 @@ def run_mcp_server():
                                     },
                                     "required": ["patch_content", "target_branch"]
                                 }
+                            },
+                            {
+                                "name": "atrium_search_symbols",
+                                "description": "Search the local AST symbol graph for class, function, struct, or method signatures matching a query. Use this BEFORE reading raw files to locate where logic lives. You have persistent repository memory via an underlying SQLite database.",
+                                "inputSchema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "query": {"type": "string", "description": "The search query (e.g., class, function, struct, or method name)"}
+                                    },
+                                    "required": ["query"]
+                                }
+                            },
+                            {
+                                "name": "atrium_get_precision_slice",
+                                "description": "Retrieve an optimized, token-saving structural code slice (signatures + relevant rules) for a specific file path. Use this instead of dumping the full file to save 98% in token costs. You have persistent repository memory via an underlying SQLite database.",
+                                "inputSchema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "file_path": {"type": "string", "description": "Absolute or relative file path to retrieve structural slice for"},
+                                        "task_context": {"type": "string", "description": "Context of the task being performed"}
+                                    },
+                                    "required": ["file_path", "task_context"]
+                                }
+                            },
+                            {
+                                "name": "atrium_verify_patch",
+                                "description": "Trigger the local background verification pipeline (cargo check, tests, clippy) to validate your proposed code modifications. Always run this tool AFTER modifying files to guarantee you didn't break the build before finalizing your response. You have persistent repository memory via an underlying SQLite database. If a compilation or lint error occurs during atrium_verify_patch, you must autonomously analyze the compiler feedback and call the tools again to fix your own mistakes before presenting the final answer to the user.",
+                                "inputSchema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "patch_diff": {"type": "string", "description": "Unified diff patch content representing proposed modifications (optional)"}
+                                    },
+                                    "required": []
+                                }
                             }
                         ]
                     }
@@ -250,18 +339,50 @@ def run_mcp_server():
                     "result": {}
                 }
                 
-            sys.stdout.write(json.dumps(resp) + "\n")
-            sys.stdout.flush()
+            if req_id is not None:
+                sys.stdout.write(json.dumps(resp) + "\n")
+                sys.stdout.flush()
         except Exception as e:
             sys.stderr.write(f"MCP Exception: {str(e)}\n")
             sys.stderr.flush()
 
+def run_cli_search_symbols(args):
+    stub = get_grpc_stub()
+    try:
+        req = daemon_pb2.SearchRequest(query=args.query)
+        resp = stub.SearchSymbols(req)
+        if not resp.success:
+            print(f"Search failed: {resp.message}")
+            return
+        print(f"Search results for '{args.query}':")
+        for m in resp.matches:
+            print(f" - File: {m.file_path} | Name: {m.symbol_name} ({m.symbol_kind})")
+    except grpc.RpcError as e:
+        print(f"gRPC Error: {e.details()} (Code: {e.code()})", file=sys.stderr)
+
+def run_cli_get_precision_slice(args):
+    stub = get_grpc_stub()
+    try:
+        req = daemon_pb2.SliceRequest(file_path=args.file_path, task_context=args.task_context or "")
+        resp = stub.GetPrecisionSlice(req)
+        if not resp.success:
+            print(f"Slice failed: {resp.message}")
+            return
+        print(resp.code_slice)
+    except grpc.RpcError as e:
+        print(f"gRPC Error: {e.details()} (Code: {e.code()})", file=sys.stderr)
+
 def main():
+    # Normalize "mcp" positional argument to "--mcp" flag
+    for idx, arg in enumerate(sys.argv):
+        if arg == "mcp":
+            sys.argv[idx] = "--mcp"
+
     parser = argparse.ArgumentParser(description="Atrium Bridge Client / MCP Server")
     
     # We support either --mcp OR --action
     parser.add_argument("--mcp", action="store_true", help="Launch bridge in Model Context Protocol (MCP) server mode")
-    parser.add_argument("--action", choices=["index", "add-fact", "get-context", "verify"], help="Action to execute")
+    parser.add_argument("--action", choices=["index", "add-fact", "get-context", "verify", "search-symbols", "get-precision-slice"], help="Action to execute")
     
     # Flags for various actions
     parser.add_argument("--path", help="Path to repository (used by index)")
@@ -272,6 +393,9 @@ def main():
     parser.add_argument("--files", nargs="+", help="Focus file paths (optional, used by get-context)")
     parser.add_argument("--patch", help="Patch text or path to diff file (used by verify)")
     parser.add_argument("--branch", default="main", help="Target branch name (used by verify)")
+    parser.add_argument("--query", help="Query string (used by search-symbols)")
+    parser.add_argument("--file-path", help="Target file path (used by get-precision-slice)")
+    parser.add_argument("--task-context", help="Task context description (used by get-precision-slice)")
     
     args = parser.parse_args()
 
@@ -303,6 +427,16 @@ def main():
             print("Error: --patch is required for verify action", file=sys.stderr)
             sys.exit(1)
         run_cli_verify(args)
+    elif args.action == "search-symbols":
+        if not args.query:
+            print("Error: --query is required for search-symbols action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_search_symbols(args)
+    elif args.action == "get-precision-slice":
+        if not args.file_path:
+            print("Error: --file-path is required for get-precision-slice action", file=sys.stderr)
+            sys.exit(1)
+        run_cli_get_precision_slice(args)
 
 if __name__ == "__main__":
     main()
