@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ATRIUM | Developer Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#00422b",
+                    "primary-fixed-dim": "#4edea3",
+                    "secondary-fixed": "#ffd6fd",
+                    "tertiary-fixed-dim": "#4cd7f6",
+                    "secondary-container": "#ae05c6",
+                    "on-primary": "#003824",
+                    "on-secondary-container": "#ffd8fd",
+                    "primary": "#10B981",
+                    "surface-container-highest": "#2f3632",
+                    "on-primary-fixed": "#002113",
+                    "inverse-primary": "#006c49",
+                    "primary-fixed": "#6ffbbe",
+                    "on-secondary-fixed-variant": "#7c008e",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-surface-variant": "#bbcabf",
+                    "on-tertiary-fixed-variant": "#004e5c",
+                    "on-error": "#690005",
+                    "on-tertiary": "#003640",
+                    "on-tertiary-container": "#003f4b",
+                    "tertiary": "#4cd7f6",
+                    "surface-variant": "#2f3632",
+                    "surface-container-high": "#242c27",
+                    "on-secondary-fixed": "#36003e",
+                    "surface-container-low": "#161d19",
+                    "outline": "#86948a",
+                    "on-surface": "#dde4dd",
+                    "surface-bright": "#343b36",
+                    "surface-dim": "#0e1511",
+                    "error": "#ffb4ab",
+                    "secondary": "#fbabff",
+                    "surface-tint": "#4edea3",
+                    "surface": "#0e1511",
+                    "secondary-fixed-dim": "#fbabff",
+                    "inverse-surface": "#dde4dd",
+                    "primary-container": "#10b981",
+                    "on-tertiary-fixed": "#001f26",
+                    "on-secondary": "#580065",
+                    "outline-variant": "#3c4a42",
+                    "tertiary-fixed": "#acedff",
+                    "background": "#030303",
+                    "on-primary-fixed-variant": "#005236",
+                    "surface-container-lowest": "#09100c",
+                    "tertiary-container": "#00b2d0",
+                    "on-background": "#dde4dd",
+                    "surface-container": "#1a211d",
+                    "inverse-on-surface": "#2b322d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "container-max": "1440px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["JetBrains Mono"],
+                    "body-sm": ["JetBrains Mono"],
+                    "body-lg": ["JetBrains Mono"],
+                    "headline-lg": ["JetBrains Mono"],
+                    "headline-sm": ["JetBrains Mono"],
+                    "headline-md": ["JetBrains Mono"],
+                    "label-caps": ["JetBrains Mono"],
+                    "code-sm": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #030303;
+            color: #dde4dd;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .dense-grid {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .panel-border {
+            border: 1px solid #1F1F23;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .neon-glow {
+            filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
+        }
+
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.2); }
+        }
+
+        .node-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 10s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030303;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F1F23;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop py-2 h-12 bg-background/80 backdrop-blur-md z-50 border-b border-outline-variant">
+<div class="flex items-center space-x-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tighter">▲ ATRIUM</span>
+<div class="h-4 w-px bg-outline-variant mx-2"></div>
+<nav class="hidden md:flex space-x-6">
+<a class="text-primary font-bold border-b border-primary font-label-caps text-label-caps h-full flex items-center" href="#">REDUCTION</a>
+<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-150 font-medium font-label-caps text-label-caps" href="#">SYMBOLS</a>
+<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-150 font-medium font-label-caps text-label-caps" href="#">RULES</a>
+</nav>
+</div>
+<div class="flex items-center space-x-6 font-code-sm text-code-sm text-on-surface-variant">
+<div class="flex items-center space-x-4">
+<span>REDUCTION: <span class="text-primary">97.4%</span></span>
+<span class="opacity-30">|</span>
+<span>SYMBOLS: <span class="text-primary">142</span></span>
+<span class="opacity-30">|</span>
+<span>RULES: <span class="text-primary">12</span></span>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-2 h-2 rounded-full bg-primary status-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+<span class="text-primary font-bold">Online</span>
+</div>
+<div class="flex items-center space-x-3 ml-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">sensors</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Sidebar (Hidden visually but keeping structure if needed for future expansion) -->
+<aside class="fixed left-0 top-12 bottom-0 flex flex-col items-center py-4 z-40 bg-surface border-r border-outline-variant w-14 group transition-all hover:w-20 hidden md:flex">
+<div class="flex flex-col space-y-6 items-center w-full">
+<button class="bg-primary-container/10 text-primary border-r-2 border-primary p-2 w-full flex justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hub</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 w-full flex justify-center hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 w-full flex justify-center hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">rule</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 w-full flex justify-center hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">rocket_launch</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 w-full flex justify-center hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">list_alt</span>
+</button>
+</div>
+<div class="mt-auto pb-4">
+<button class="text-on-surface-variant hover:text-on-surface p-2 w-full flex justify-center hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-14 flex flex-col relative overflow-hidden">
+<!-- Top Half (Spatial Topology + Telemetry) -->
+<section class="flex flex-1 min-h-0 border-b border-outline-variant">
+<!-- Left: Code Graph Spatial Topology (70%) -->
+<div class="w-[70%] relative dense-grid flex flex-col bg-[#030303]">
+<div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center pointer-events-none z-10">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest opacity-60">System View</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface">Code Graph Spatial Topology</h2>
+</div>
+<div class="flex space-x-2">
+<span class="px-2 py-1 bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">LATENCY: 4ms</span>
+<span class="px-2 py-1 bg-tertiary/10 border border-tertiary/20 text-tertiary text-[10px] font-bold">MODE: SPATIAL</span>
+</div>
+</div>
+<!-- WebGL / Canvas Placeholder for Node Graph -->
+<div class="flex-1 flex items-center justify-center relative">
+<svg class="w-full h-full" viewbox="0 0 1000 600">
+<defs>
+<filter id="neon-glow">
+<fegaussianblur result="coloredBlur" stddeviation="2.5"></fegaussianblur>
+<femerge>
+<femergenode in="coloredBlur"></femergenode>
+<femergenode in="SourceGraphic"></femergenode>
+</femerge>
+</filter>
+</defs>
+<!-- Connecting Lines -->
+<path d="M500 300 L300 200" stroke="#1F1F23" stroke-width="1"></path>
+<path d="M500 300 L700 220" stroke="#1F1F23" stroke-width="1"></path>
+<path d="M500 300 L600 450" stroke="#1F1F23" stroke-width="1"></path>
+<path d="M300 200 L150 250" stroke="#1F1F23" stroke-width="1"></path>
+<!-- Active Flow -->
+<path class="node-path" d="M500 300 L300 200" fill="none" filter="url(#neon-glow)" stroke="#10B981" stroke-width="1"></path>
+<path class="node-path" d="M300 200 L150 250" fill="none" filter="url(#neon-glow)" stroke="#10B981" stroke-width="1" style="animation-delay: -2s"></path>
+<!-- Nodes -->
+<g class="cursor-pointer group">
+<circle cx="500" cy="300" fill="#10B981" r="6"></circle>
+<text class="font-body-sm text-body-sm pointer-events-none" fill="#dde4dd" x="515" y="305">atriumd (daemon)</text>
+<circle class="status-pulse" cx="500" cy="300" fill="none" r="12" stroke="#10B981" stroke-width="1"></circle>
+</g>
+<g class="cursor-pointer group">
+<circle cx="300" cy="200" fill="#4cd7f6" r="4"></circle>
+<text class="font-body-sm text-body-sm pointer-events-none" fill="#bbcabf" x="250" y="180">atrium-core-graph</text>
+</g>
+<g class="cursor-pointer group">
+<circle cx="700" cy="220" fill="#4cd7f6" r="4"></circle>
+<text class="font-body-sm text-body-sm pointer-events-none" fill="#bbcabf" x="715" y="225">atrium-core-verify</text>
+</g>
+<g class="cursor-pointer group">
+<circle cx="150" cy="250" fill="#fbabff" r="4"></circle>
+<text class="font-body-sm text-body-sm pointer-events-none" fill="#bbcabf" x="80" y="275">api/bridge.py</text>
+</g>
+</svg>
+</div>
+</div>
+<!-- Right: Live System Telemetry Stream (30%) -->
+<div class="w-[30%] glass-panel border-l border-outline-variant flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-[#0A0A0B]">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span>LIVE_TELEMETRY_STREAM</span>
+</h3>
+<span class="text-[10px] text-primary">LIVE_BUFFER: 1024KB</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-2 font-code-sm text-code-sm" id="log-container">
+<div class="text-[#86948a]"><span class="text-primary">[19:10:22]</span> CACHE HIT: src/lib.rs (Saved 24k tokens)</div>
+<div class="text-[#86948a]"><span class="text-tertiary">[19:10:23]</span> NODE SYNC: atrium-core-graph -&gt; OK</div>
+<div class="text-[#86948a]"><span class="text-secondary">[19:10:25]</span> INFERENCE: rule_checker.rs (Depth: 12)</div>
+<div class="text-error"><span class="text-error">[19:10:26]</span> RECOVERY: api/bridge.py connection reset</div>
+<div class="text-[#86948a]"><span class="text-primary">[19:10:28]</span> COMPILATION: atriumd binary refreshed</div>
+<div class="text-[#86948a]"><span class="text-primary">[19:10:30]</span> REDUCTION: optimized 142 symbols</div>
+<div class="text-[#86948a]"><span class="text-tertiary">[19:10:32]</span> STREAM: 42.1 MB/s throughput</div>
+<div class="text-[#86948a]"><span class="text-primary">[19:10:35]</span> CACHE HIT: src/main.rs (Saved 12k tokens)</div>
+<div class="text-[#86948a]"><span class="text-primary">[19:10:37]</span> SYMBOL_LINK: registry/v2.map populated</div>
+<div class="text-[#86948a]"><span class="text-primary">[19:10:38]</span> CACHE HIT: src/lib.rs (Saved 24k tokens)</div>
+<div class="text-tertiary"><span class="text-tertiary">[19:10:40]</span> BROADCAST: NODE_01 heartbeat sent</div>
+<div class="text-[#86948a] animate-pulse"><span class="text-primary">[19:10:42]</span> STREAMING...</div>
+</div>
+</div>
+</section>
+<!-- Bottom: Architectural Rules Registry -->
+<section class="h-48 bg-[#0A0A0B] flex flex-col">
+<div class="px-4 py-2 border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center space-x-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">ARCHITECTURAL_RULES_REGISTRY</h3>
+<div class="flex space-x-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+<span class="w-1.5 h-1.5 bg-error rounded-full animate-pulse"></span>
+</div>
+</div>
+<div class="text-[10px] text-on-surface-variant opacity-50 font-code-sm">MATRIX_VIEW_01.X86_64</div>
+</div>
+<div class="flex-1 grid grid-cols-4 gap-px bg-outline-variant/30 overflow-hidden">
+<!-- Rule Cell 1 -->
+<div class="bg-[#0A0A0B] p-4 flex flex-col justify-between group hover:bg-[#141416] transition-colors cursor-pointer border-r border-outline-variant">
+<div class="flex justify-between items-start">
+<span class="text-primary font-code-sm text-[11px]">R-102: NO_RAW_POINTERS</span>
+<span class="material-symbols-outlined text-primary text-xs">check_circle</span>
+</div>
+<div class="mt-2 text-on-surface-variant font-code-sm text-[10px] leading-relaxed">
+                        Enforce memory safety in core modules. Zero violations in 12 files.
+                    </div>
+<div class="mt-auto pt-2 flex items-center text-[9px] text-on-surface-variant opacity-40">
+                        LAST_CHECK: 2m ago
+                    </div>
+</div>
+<!-- Rule Cell 2 -->
+<div class="bg-[#0A0A0B] p-4 flex flex-col justify-between group hover:bg-[#141416] transition-colors cursor-pointer border-r border-outline-variant">
+<div class="flex justify-between items-start">
+<span class="text-tertiary font-code-sm text-[11px]">R-405: SYMBOL_ISOLATION</span>
+<span class="material-symbols-outlined text-tertiary text-xs">info</span>
+</div>
+<div class="mt-2 text-on-surface-variant font-code-sm text-[10px] leading-relaxed">
+                        Namespace collision check in global registry. 142 symbols verified.
+                    </div>
+<div class="mt-auto pt-2 flex items-center text-[9px] text-on-surface-variant opacity-40">
+                        LAST_CHECK: 45s ago
+                    </div>
+</div>
+<!-- Rule Cell 3 -->
+<div class="bg-[#0A0A0B] p-4 flex flex-col justify-between group hover:bg-[#141416] transition-colors cursor-pointer border-r border-outline-variant">
+<div class="flex justify-between items-start">
+<span class="text-error font-code-sm text-[11px]">R-901: API_BRIDGE_RETRY</span>
+<span class="material-symbols-outlined text-error text-xs animate-pulse">warning</span>
+</div>
+<div class="mt-2 text-error/80 font-code-sm text-[10px] leading-relaxed">
+                        RETRY_LIMIT reached for bridge.py. Check network topology logs.
+                    </div>
+<div class="mt-auto pt-2 flex items-center text-[9px] text-error/40">
+                        VIOLATION DETECTED
+                    </div>
+</div>
+<!-- Rule Cell 4 -->
+<div class="bg-[#0A0A0B] p-4 flex flex-col justify-between group hover:bg-[#141416] transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant font-code-sm text-[11px]">R-004: DOC_COVERAGE</span>
+<span class="material-symbols-outlined text-on-surface-variant text-xs">pending</span>
+</div>
+<div class="mt-2 text-on-surface-variant/60 font-code-sm text-[10px] leading-relaxed">
+                        Calculate JSDoc/RustDoc density across current buffer. 
+                    </div>
+<div class="mt-auto pt-2 flex items-center text-[9px] text-on-surface-variant opacity-40">
+                        QUEUED
+                    </div>
+</div>
+</div>
+</section>
+</main>
+<!-- UI Overlay Elements -->
+<div class="fixed bottom-4 right-4 flex space-x-2">
+<button class="bg-[#1F1F23] text-on-surface-variant hover:text-white px-3 py-1.5 panel-border text-[10px] font-bold tracking-widest flex items-center space-x-2 transition-all active:scale-95">
+<span class="material-symbols-outlined text-xs">refresh</span>
+<span>RESCAN_ALL</span>
+</button>
+<button class="bg-primary text-black px-3 py-1.5 rounded-none text-[10px] font-bold tracking-widest flex items-center space-x-2 transition-all active:scale-95">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span>DEPLOY_HOT</span>
+</button>
+</div>
+<script>
+        // Micro-interaction for logs
+        const logContainer = document.getElementById('log-container');
+        const logs = [
+            { type: 'primary', msg: '[19:10:45] CACHE HIT: lib/utils.rs (Saved 2k tokens)' },
+            { type: 'tertiary', msg: '[19:10:46] SYNC: node_02 acknowledged' },
+            { type: 'secondary', msg: '[19:10:48] EVENT: rule R-102 re-validated' },
+            { type: 'primary', msg: '[19:10:50] METRIC: reduction efficiency +0.2%' }
+        ];
+
+        setInterval(() => {
+            const log = logs[Math.floor(Math.random() * logs.length)];
+            const div = document.createElement('div');
+            div.className = `text-[#86948a] opacity-0 transition-opacity duration-500`;
+            div.innerHTML = `<span class="text-${log.type}">${log.msg.split(' ')[0]}</span> ${log.msg.split(' ').slice(1).join(' ')}`;
+            
+            // Remove the "STREAMING..." line temporarily
+            const streaming = logContainer.querySelector('.animate-pulse');
+            if(streaming) logContainer.removeChild(streaming);
+            
+            logContainer.appendChild(div);
+            setTimeout(() => div.classList.remove('opacity-0'), 10);
+            
+            // Append streaming back
+            const newStreaming = document.createElement('div');
+            newStreaming.className = "text-[#86948a] animate-pulse";
+            newStreaming.innerHTML = `<span class="text-primary">[${new Date().toLocaleTimeString('en-GB')}]</span> STREAMING...`;
+            logContainer.appendChild(newStreaming);
+            
+            // Scroll to bottom
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            // Keep only last 20 logs
+            if (logContainer.children.length > 25) {
+                logContainer.removeChild(logContainer.children[0]);
+            }
+        }, 3000);
+
+        // Hover effect for Rule Registry cells
+        document.querySelectorAll('.bg-[#0A0A0B]').forEach(cell => {
+            cell.addEventListener('mouseenter', () => {
+                cell.style.boxShadow = 'inset 0 0 10px rgba(16, 185, 129, 0.05)';
+            });
+            cell.addEventListener('mouseleave', () => {
+                cell.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body></html>

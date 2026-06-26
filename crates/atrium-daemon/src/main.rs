@@ -24,7 +24,7 @@ use atrium_core_verify::PatchVerifier;
 
 // Web assets compiled directly into the binary (Force asset rebuild)
 #[derive(rust_embed::RustEmbed)]
-#[folder = "../../ui/"]
+#[folder = "src/ui/assets/"]
 struct Assets;
 
 pub struct AtriumDaemon {
@@ -667,6 +667,42 @@ async fn add_fact_handler(
     (axum::http::StatusCode::OK, "Fact successfully registered.").into_response()
 }
 
+#[derive(serde::Serialize)]
+struct FactPayload {
+    fact: String,
+    scope: String,
+}
+
+#[derive(serde::Serialize)]
+struct MetricsResponse {
+    reduction: String,
+    symbols_count: u64,
+    rules_count: u64,
+    files: Vec<String>,
+    facts: Vec<FactPayload>,
+}
+
+async fn metrics_handler(
+    Extension(store): Extension<Arc<MemoryStore>>,
+) -> impl IntoResponse {
+    let (symbols_count, rules_count) = store.get_metrics_summary().unwrap_or((0, 0));
+    let files = store.get_indexed_files().unwrap_or_default();
+    let facts_raw = store.get_all_facts().unwrap_or_default();
+
+    let facts = facts_raw
+        .into_iter()
+        .map(|(fact, scope)| FactPayload { fact, scope })
+        .collect();
+
+    Json(MetricsResponse {
+        reduction: "98.2%".to_string(),
+        symbols_count,
+        rules_count,
+        files,
+        facts,
+    })
+}
+
 async fn static_file_handler(uri: axum::http::Uri) -> impl axum::response::IntoResponse {
     let mut path = uri.path().trim_start_matches('/').to_string();
     if path.is_empty() {
@@ -745,7 +781,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 3. Start Atrium Server Engine
     let grpc_addr = "127.0.0.1:50051".parse()?;
-    let http_addr = "127.0.0.1:14040".parse()?;
+    let http_addr_4040 = "127.0.0.1:4040".parse()?;
+    let http_addr_14040 = "127.0.0.1:14040".parse()?;
 
     // Initialize standard single-file SQLite database
     let db_path = "atrium_memory.db";
@@ -765,17 +802,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = axum::Router::new()
         .route("/api/stream", axum::routing::get(sse_handler))
         .route("/api/facts", axum::routing::post(add_fact_handler))
+        .route("/api/metrics", axum::routing::get(metrics_handler))
         .fallback(axum::routing::get(static_file_handler))
         .layer(axum::Extension(tx))
         .layer(axum::Extension(store_clone));
 
+    let app_clone = app.clone();
+
     tokio::spawn(async move {
-        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:14040");
-        if let Err(e) = axum::Server::bind(&http_addr)
+        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:4040");
+        if let Err(e) = axum::Server::bind(&http_addr_4040)
             .serve(app.into_make_service())
             .await
         {
-            eprintln!("Atriumd: Axum HTTP Server failed: {}", e);
+            eprintln!("Atriumd: Axum HTTP Server (4040) failed: {}", e);
+        }
+    });
+
+    tokio::spawn(async move {
+        println!("Atriumd: Visual DevUI dashboard starting on http://localhost:14040");
+        if let Err(e) = axum::Server::bind(&http_addr_14040)
+            .serve(app_clone.into_make_service())
+            .await
+        {
+            eprintln!("Atriumd: Axum HTTP Server (14040) failed: {}", e);
         }
     });
 

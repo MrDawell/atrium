@@ -37,7 +37,7 @@ Start the background service daemon:
 ```bash
 atriumd
 ```
-Atrium will boot up, initialize its local SQLite memory database (`atrium_memory.db`), and launch a visual dashboard at [http://localhost:14040](http://localhost:14040).
+Atrium will boot up, initialize its local SQLite memory database (`atrium_memory.db`), and launch a visual dashboard at [http://localhost:4040](http://localhost:4040).
 
 ### 🤖 AI Agent Autopilot Setup
 If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline, or Roo Code), you can copy and paste the prompt below into the chat, and the agent will configure and run everything for you autonomously:
@@ -48,7 +48,7 @@ If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline
 
 ## 💡 Track 2: The "Why It Works" Analogy Section
 
-Traditional AI coding tools have a severe memory and cost problem. Every time you ask an agent to make a small change, it re-scans your entire project and dumps thousands of lines of raw source code into the prompt. This wastes your token budget, floods the model's context window with noise, and causes it to lose focus.
+Traditional AI coding tools have a severe memory and cost problem. Every time you ask an agent to make a change, it re-scans your entire project and dumps thousands of lines of raw source code into the prompt. This wastes your token budget, floods the model's context window with noise, and causes it to lose focus.
 
 Atrium changes the game using three core design patterns:
 
@@ -85,26 +85,26 @@ Atrium is organized as a lightweight Rust workspace fronted by a Python bridge t
                │           (Dual-Mode CLI & Stdio MCP Server)           │
                └───────────────────────────┬────────────────────────────┘
                                             │
-                                       gRPC Loopback
+                                        gRPC Loopback
                                             │
                                             ▼
-  ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-  │                                     atriumd DAEMON (Port 50051)                         │
-  │                                                                                         │
-  │  ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐  │
-  │  │   atrium-core-graph     │   │   atrium-core-memory    │   │   atrium-core-verify   │  │
-  │  │                         │   │                         │   │                        │  │
-  │  │ • Tree-sitter Parser    │──>│ • SQLite Database       │──>│ • Asynchronous Process │  │
-  │  │ • Fast AST Extractor    │   │ • Durable Fact Store    │   │   Runner               │  │
-  │  │ • Language Grammar Map  │   │ • Unique Symbol Indices │   │ • cargo test/check/lint│  │
-  │  └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘  │
-  └───────────────────────────────────────┬─────────────────────────────────────────────────┘
-                                          │  (Port 14040)
-                                          ▼
-                         ┌─────────────────────────────────┐
-                         │      Embedded DevUI Web App     │
-                         │   (rust-embed + Axum SSE/HTML)  │
-                         └─────────────────────────────────┘
+   ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+   │                                     atriumd DAEMON (Port 50051)                         │
+   │                                                                                         │
+   │  ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐  │
+   │  │   atrium-core-graph     │   │   atrium-core-memory    │   │   atrium-core-verify   │  │
+   │  │                         │   │                         │   │                        │  │
+   │  │ • Tree-sitter Parser    │──>│ • SQLite Database       │──>│ • Asynchronous Process │  │
+   │  │ • Fast AST Extractor    │   │ • Durable Fact Store    │   │   Runner               │  │
+   │  │ • Language Grammar Map  │   │ • Unique Symbol Indices │   │ • cargo test/check/lint│  │
+   │  └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘  │
+   └───────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                           │  (Port 4040)
+                                           ▼
+                          ┌─────────────────────────────────┐
+                          │      Embedded DevUI Web App     │
+                          │   (rust-embed + Axum SSE/HTML)  │
+                          └─────────────────────────────────┘
 ```
 
 * **[api/daemon.proto](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/daemon.proto):** gRPC/Protocol Buffers interface contract.

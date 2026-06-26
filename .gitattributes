@@ -1,0 +1,7 @@
+# Treat the visual dashboard files as generated/vendor assets so they are excluded from language stats
+code.html linguist-vendored
+index.html linguist-vendored
+*.html linguist-vendored
+
+# Ensure any future compiled embedded asset folders are also ignored by the language counter
+crates/atrium-daemon/src/ui/assets/** linguist-vendored

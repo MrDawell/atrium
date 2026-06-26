@@ -178,4 +178,24 @@ impl MemoryStore {
 
         Ok(files)
     }
+
+    pub fn get_metrics_summary(&self) -> Result<(u64, u64), Box<dyn std::error::Error>> {
+        let conn = self.conn.lock().map_err(|e| format!("Mutex lock error: {}", e))?;
+        let symbols_count: u64 = conn.query_row("SELECT COUNT(*) FROM symbols", [], |r| r.get(0)).unwrap_or(0);
+        let facts_count: u64 = conn.query_row("SELECT COUNT(*) FROM durable_memories", [], |r| r.get(0)).unwrap_or(0);
+        Ok((symbols_count, facts_count))
+    }
+
+    pub fn get_all_facts(&self) -> Result<Vec<(String, String)>, Box<dyn std::error::Error>> {
+        let conn = self.conn.lock().map_err(|e| format!("Mutex lock error: {}", e))?;
+        let mut stmt = conn.prepare("SELECT fact, scope FROM durable_memories")?;
+        let rows = stmt.query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+        })?;
+        let mut facts = Vec::new();
+        for fact_res in rows {
+            facts.push(fact_res?);
+        }
+        Ok(facts)
+    }
 }

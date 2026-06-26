@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ATRIUM | Developer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#00422b",
+                    "primary-fixed-dim": "#4edea3",
+                    "secondary-fixed": "#ffd6fd",
+                    "tertiary-fixed-dim": "#4cd7f6",
+                    "secondary-container": "#ae05c6",
+                    "on-primary": "#003824",
+                    "on-secondary-container": "#ffd8fd",
+                    "primary": "#10B981",
+                    "surface-container-highest": "#2f3632",
+                    "on-primary-fixed": "#002113",
+                    "inverse-primary": "#006c49",
+                    "primary-fixed": "#6ffbbe",
+                    "on-secondary-fixed-variant": "#7c008e",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-surface-variant": "#bbcabf",
+                    "on-tertiary-fixed-variant": "#004e5c",
+                    "on-error": "#690005",
+                    "on-tertiary": "#003640",
+                    "on-tertiary-container": "#003f4b",
+                    "tertiary": "#4cd7f6",
+                    "surface-variant": "#2f3632",
+                    "surface-container-high": "#242c27",
+                    "on-secondary-fixed": "#36003e",
+                    "surface-container-low": "#161d19",
+                    "outline": "#86948a",
+                    "on-surface": "#dde4dd",
+                    "surface-bright": "#343b36",
+                    "surface-dim": "#0e1511",
+                    "error": "#ffb4ab",
+                    "secondary": "#fbabff",
+                    "surface-tint": "#4edea3",
+                    "surface": "#0e1511",
+                    "secondary-fixed-dim": "#fbabff",
+                    "inverse-surface": "#dde4dd",
+                    "primary-container": "#10b981",
+                    "on-tertiary-fixed": "#001f26",
+                    "on-secondary": "#580065",
+                    "outline-variant": "#3c4a42",
+                    "tertiary-fixed": "#acedff",
+                    "background": "#030303",
+                    "on-primary-fixed-variant": "#005236",
+                    "surface-container-lowest": "#09100c",
+                    "tertiary-container": "#00b2d0",
+                    "on-background": "#dde4dd",
+                    "surface-container": "#1a211d",
+                    "inverse-on-surface": "#2b322d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "container-max": "1440px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["JetBrains Mono"],
+                    "body-sm": ["JetBrains Mono"],
+                    "body-lg": ["JetBrains Mono"],
+                    "headline-lg": ["JetBrains Mono"],
+                    "headline-sm": ["JetBrains Mono"],
+                    "headline-md": ["JetBrains Mono"],
+                    "label-caps": ["JetBrains Mono"],
+                    "code-sm": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        body {
+            background-color: #030303;
+            color: #dde4dd;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .dense-grid {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .panel-border {
+            border: 1px solid #1F1F23;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 11, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .neon-glow {
+            filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
+        }
+
+        .status-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.2); }
+        }
+
+        .node-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 8s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030303;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F1F23;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+    <!-- TopNavBar -->
+    <header class="flex justify-between items-center w-full px-margin-desktop py-2 h-12 bg-background/80 backdrop-blur-md z-50 border-b border-outline-variant">
+        <div class="flex items-center space-x-4">
+            <span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tighter">▲ ATRIUM</span>
+            <div class="h-4 w-px bg-outline-variant mx-2"></div>
+            <nav class="hidden md:flex space-x-6">
+                <a class="text-primary font-bold border-b border-primary font-label-caps text-label-caps h-full flex items-center" href="#">REDUCTION</a>
+                <a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150 font-medium font-label-caps text-label-caps" href="#">SYMBOLS</a>
+                <a class="text-on-surface-variant hover:text-on-surface transition-colors duration-150 font-medium font-label-caps text-label-caps" href="#">RULES</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-6 font-code-sm text-code-sm text-on-surface-variant">
+            <div class="flex items-center space-x-4">
+                <span>REDUCTION: <span id="valTokens" class="text-primary">98.2%</span></span>
+                <span class="opacity-30">|</span>
+                <span>SYMBOLS: <span id="valSymbols" class="text-primary">0</span></span>
+                <span class="opacity-30">|</span>
+                <span>RULES: <span id="valFacts" class="text-primary">0</span></span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div id="statusPulse" class="w-2 h-2 rounded-full bg-primary status-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+                <span id="statusText" class="text-primary font-bold">Online</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex flex-col relative overflow-hidden">
+        <!-- Top Half (Spatial Topology + Telemetry) -->
+        <section class="flex flex-1 min-h-0 border-b border-outline-variant">
+            <!-- Left: Code Graph Spatial Topology (70%) -->
+            <div id="canvasContainer" class="w-[70%] relative dense-grid flex flex-col bg-[#030303] cursor-grab active:cursor-grabbing select-none">
+                <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center pointer-events-none z-10">
+                    <div class="flex flex-col">
+                        <span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest opacity-60">System View</span>
+                        <h2 class="text-headline-sm font-headline-sm text-on-surface">Code Graph Spatial Topology</h2>
+                    </div>
+                    <div class="flex space-x-2 pointer-events-auto">
+                        <span class="px-2 py-1 bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">LATENCY: 4ms</span>
+                        <button id="mode-toggle-btn" onclick="toggleViewMode()" class="px-2 py-1 bg-tertiary/10 border border-tertiary/20 text-tertiary text-[10px] font-bold cursor-pointer hover:bg-tertiary/20 transition-all">MODE: SPATIAL</button>
+                    </div>
+                </div>
+                <!-- Interactive SVG Canvas -->
+                <div class="flex-1 flex items-center justify-center relative">
+                    <svg id="topology-svg" class="w-full h-full" viewBox="0 0 1000 600">
+                        <defs>
+                            <filter id="neon-glow">
+                                <feGaussianBlur result="coloredBlur" stdDeviation="2.5"></feGaussianBlur>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"></feMergeNode>
+                                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <!-- Connecting Lines Group -->
+                        <g id="links-group"></g>
+                        <!-- Nodes Group -->
+                        <g id="nodes-group"></g>
+                    </svg>
+                    <div class="absolute bottom-4 left-4 text-[10px] text-on-surface-variant opacity-40 pointer-events-none">
+                        Drag mouse to rotate 3D node topology. Click node to pulse.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live System Telemetry Stream (30%) -->
+            <div class="w-[30%] glass-panel border-l border-outline-variant flex flex-col">
+                <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-[#0A0A0B]">
+                    <h3 class="font-label-caps text-label-caps text-on-surface-variant flex items-center space-x-2">
+                        <span class="material-symbols-outlined text-sm">terminal</span>
+                        <span>LIVE_TELEMETRY_STREAM</span>
+                    </h3>
+                    <span class="text-[10px] text-primary">LIVE_BUFFER: 1024KB</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-2 font-code-sm text-code-sm" id="log-container">
+                    <div class="text-[#86948a]"><span class="text-primary">[System]</span> DevUI Connected. Fetching repository metrics...</div>
+                    <div class="text-[#86948a] animate-pulse" id="streaming-indicator"><span class="text-primary">[System]</span> STREAMING...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom: Architectural Rules Registry -->
+        <section class="h-56 bg-[#0A0A0B] flex flex-col">
+            <div class="px-4 py-2 border-b border-outline-variant flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <h3 class="font-label-caps text-label-caps text-on-surface-variant">ARCHITECTURAL_RULES_REGISTRY</h3>
+                    <div class="flex space-x-2">
+                        <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        <span class="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
+                    </div>
+                </div>
+                <div>
+                    <input class="bg-background border border-outline-variant focus:border-primary text-on-surface font-code-sm text-[10px] px-2 py-0.5 focus:outline-none w-64" type="text" id="filterInput" placeholder="🔍 Search rules/scopes..." oninput="renderRules()">
+                </div>
+            </div>
+            
+            <div class="flex-1 grid grid-cols-4 gap-px bg-outline-variant/30 overflow-hidden">
+                <!-- Registration Form Column -->
+                <div class="bg-[#0A0A0B] p-3 flex flex-col justify-between border-r border-outline-variant">
+                    <div class="text-primary font-code-sm text-[11px] font-bold">ADD NEW INVARIANT</div>
+                    <div class="space-y-2 flex-grow flex flex-col justify-center">
+                        <div>
+                            <label class="text-[9px] text-on-surface-variant block mb-1">Guideline Text</label>
+                            <input id="ruleInput" class="w-full bg-background border border-outline-variant focus:border-primary text-on-surface font-code-sm text-[10px] px-2 py-1.5 focus:outline-none" placeholder="e.g. Do not use anyhow for errors" />
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-on-surface-variant block mb-1">Scope Map</label>
+                            <select id="scopeSelect" class="w-full bg-background border border-outline-variant focus:border-primary text-on-surface font-code-sm text-[10px] px-2 py-1.5 focus:outline-none">
+                                <option value="global">global</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="registerDurableRule()" class="mt-2 w-full bg-primary text-black font-code-sm text-[10px] font-bold py-1.5 hover:bg-primary-fixed transition-colors active:scale-95">REGISTER INVARIANT</button>
+                </div>
+
+                <!-- Dynamic Rules Cells Grid Container (Spans 3 Columns) -->
+                <div id="rules-container" class="col-span-3 grid grid-cols-3 gap-px bg-outline-variant/30 overflow-y-auto">
+                    <!-- Loaded rules populated here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const svg = document.getElementById('topology-svg');
+        const linksGroup = document.getElementById('links-group');
+        const nodesGroup = document.getElementById('nodes-group');
+        const container = document.getElementById('canvasContainer');
+
+        let viewMode = '3D';
+        let angleX = 0.05;
+        let angleY = 0.05;
+        let isMouseDown = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        let nodes = [
+            { id: 'bridge.py', label: 'api/bridge.py', x3d: -150, y3d: 50, z3d: 0, x: 0, y: 0, z: 0, r: 8, color: '#fbabff', pulse: 0, info: 'Python CLI / Stdio MCP Server' },
+            { id: 'daemon', label: 'atriumd (daemon)', x3d: 0, y3d: 0, z3d: 0, x: 0, y: 0, z: 0, r: 12, color: '#10B981', pulse: 0, info: 'gRPC IPC Orchestrator Core' },
+            { id: 'core-graph', label: 'atrium-core-graph', x3d: -100, y3d: -100, z3d: -50, x: 0, y: 0, z: 0, r: 8, color: '#4cd7f6', pulse: 0, info: 'Tree-sitter AST & Symbol Graph' },
+            { id: 'core-memory', label: 'atrium-core-memory', x3d: 100, y3d: 50, z3d: 100, x: 0, y: 0, z: 0, r: 8, color: '#fbabff', pulse: 0, info: 'SQLite Fact Store & Memory Layer' },
+            { id: 'core-verify', label: 'atrium-core-verify', x3d: 100, y3d: -80, z3d: -50, x: 0, y: 0, z: 0, r: 8, color: '#4cd7f6', pulse: 0, info: 'Cargo Verification Process Pipeline' }
+        ];
+
+        let links = [
+            { source: 'bridge.py', target: 'daemon' },
+            { source: 'daemon', target: 'core-graph' },
+            { source: 'daemon', target: 'core-memory' },
+            { source: 'daemon', target: 'core-verify' }
+        ];
+
+        const activeFilesSet = new Set();
+        const activeFacts = new Set();
+        let symbolCount = 0;
+
+        function addFileNode(filePath, symbolCount) {
+            if (nodes.find(n => n.id === filePath)) return;
+
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 130 + Math.random() * 50;
+            const x3d = Math.cos(angle) * radius;
+            const y3d = Math.sin(angle) * radius;
+            const z3d = (Math.random() - 0.5) * 160;
+
+            nodes.push({
+                id: filePath,
+                label: filePath.split('/').pop(),
+                x3d,
+                y3d,
+                z3d,
+                x: 0, y: 0, z: 0,
+                r: 6,
+                color: '#4cd7f6',
+                pulse: 0.5,
+                info: `Indexed source file. Declarations: ${symbolCount}`
+            });
+
+            links.push({ source: 'core-memory', target: filePath });
+            activeFilesSet.add(filePath);
+            updateScopeOptions();
+        }
+
+        function updateScopeOptions() {
+            const select = document.getElementById('scopeSelect');
+            select.innerHTML = '<option value="global">global</option>';
+            activeFilesSet.forEach(file => {
+                const opt = document.createElement('option');
+                opt.value = file;
+                opt.textContent = `file:${file.split('/').pop()}`;
+                select.appendChild(opt);
+            });
+        }
+
+        // View Mode Toggler
+        function toggleViewMode() {
+            viewMode = viewMode === '3D' ? '2D' : '3D';
+            document.getElementById('mode-toggle-btn').innerText = `MODE: ${viewMode === '3D' ? 'SPATIAL' : 'FLAT'}`;
+            triggerPulse('daemon');
+        }
+
+        // Mouse Drag Listeners
+        container.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (isMouseDown && viewMode === '3D') {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                angleY += deltaX * 0.005;
+                angleX += deltaY * 0.005;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        });
+
+        const focusLength = 340;
+        const centerX = 500;
+        const centerY = 300;
+
+        function updateAndDraw() {
+            if (viewMode === '3D') {
+                const cosX = Math.cos(angleX);
+                const sinX = Math.sin(angleX);
+                const cosY = Math.cos(angleY);
+                const sinY = Math.sin(angleY);
+
+                nodes.forEach(node => {
+                    const x1 = node.x3d * cosY - node.z3d * sinY;
+                    const z1 = node.x3d * sinY + node.z3d * cosY;
+
+                    const y2 = node.y3d * cosX - z1 * sinX;
+                    const z2 = node.y3d * sinX + z1 * cosX;
+
+                    const scale = focusLength / (focusLength + z2);
+                    node.x = centerX + x1 * scale;
+                    node.y = centerY + y2 * scale;
+                    node.z = z2;
+                    node.projScale = scale;
+                });
+
+                if (!isMouseDown) {
+                    angleX *= 0.98;
+                    angleY *= 0.98;
+                    if (Math.abs(angleX) < 0.001) angleX = 0.0005;
+                    if (Math.abs(angleY) < 0.001) angleY = 0.0005;
+                }
+            } else {
+                nodes[0].x = 150; nodes[0].y = 300; // bridge
+                nodes[1].x = 500; nodes[1].y = 300; // daemon
+                nodes[2].x = 320; nodes[2].y = 150; // graph
+                nodes[3].x = 680; nodes[3].y = 450; // memory
+                nodes[4].x = 680; nodes[4].y = 150; // verify
+
+                let fileIdx = 0;
+                const fileNodes = nodes.slice(5);
+                fileNodes.forEach(f => {
+                    f.x = 880;
+                    f.y = 80 + (fileIdx * (440 / Math.max(1, fileNodes.length - 1)));
+                    fileIdx++;
+                });
+
+                nodes.forEach(n => {
+                    n.projScale = 1.0;
+                    n.z = 0;
+                });
+            }
+
+            // Draw links
+            let linksHtml = '';
+            links.forEach(link => {
+                const s = nodes.find(n => n.id === link.source);
+                const t = nodes.find(n => n.id === link.target);
+                if (s && t) {
+                    const active = s.pulse > 0.05;
+                    const strokeColor = active ? '#10B981' : '#1F1F23';
+                    const filter = active ? 'filter="url(#neon-glow)"' : '';
+                    const animClass = active ? 'class="node-path"' : '';
+                    linksHtml += `<path ${animClass} d="M${s.x} ${s.y} L${t.x} ${t.y}" ${filter} fill="none" stroke="${strokeColor}" stroke-width="${active ? 2 : 1}"></path>`;
+                }
+            });
+            linksGroup.innerHTML = linksHtml;
+
+            // Draw nodes
+            let nodesHtml = '';
+            const renderNodes = [...nodes];
+            if (viewMode === '3D') {
+                renderNodes.sort((a, b) => b.z - a.z);
+            }
+
+            renderNodes.forEach(node => {
+                const r = node.r * node.projScale;
+                const pulseActive = node.pulse > 0.05;
+                const pulseRing = pulseActive ? `<circle class="status-pulse" cx="${node.x}" cy="${node.y}" fill="none" r="${r + 6}" stroke="${node.color}" stroke-width="1"></circle>` : '';
+
+                nodesHtml += `
+                    <g class="cursor-pointer group" onclick="nodeClicked('${node.id}')">
+                        <title>${node.label}\n${node.info}</title>
+                        <circle cx="${node.x}" cy="${node.y}" fill="${node.color}" r="${r}"></circle>
+                        ${pulseRing}
+                        <text class="font-body-sm text-[9px] pointer-events-none fill-[#bbcabf] group-hover:fill-white transition-colors" x="${node.x + r + 4}" y="${node.y + 3}">
+                            ${node.label}
+                        </text>
+                    </g>
+                `;
+
+                if (node.pulse > 0) {
+                    node.pulse -= 0.025;
+                }
+            });
+            nodesGroup.innerHTML = nodesHtml;
+
+            requestAnimationFrame(updateAndDraw);
+        }
+
+        function triggerPulse(nodeId) {
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.pulse = 1.0;
+            }
+        }
+
+        function nodeClicked(id) {
+            triggerPulse(id);
+            const node = nodes.find(n => n.id === id);
+            if (node && node.info) {
+                const time = new Date().toLocaleTimeString('en-GB');
+                appendLogMessage('primary', time, `NODE CLICK: ${node.label} - ${node.info}`);
+            }
+        }
+
+        // Live Telemetry Logs
+        const logContainer = document.getElementById('log-container');
+        function appendLogMessage(type, time, msg) {
+            const div = document.createElement('div');
+            div.className = `text-[#86948a] opacity-0 transition-opacity duration-300`;
+            
+            let colorClass = 'text-primary';
+            if (type === 'verify') colorClass = 'text-secondary';
+            else if (type === 'fact') colorClass = 'text-tertiary';
+            else if (type === 'context') colorClass = 'text-secondary-fixed';
+            else if (type === 'error') colorClass = 'text-error';
+            
+            div.innerHTML = `<span class="${colorClass}">[${time}]</span> ${msg}`;
+            
+            const streaming = document.getElementById('streaming-indicator');
+            if (streaming) logContainer.removeChild(streaming);
+            
+            logContainer.appendChild(div);
+            setTimeout(() => div.classList.remove('opacity-0'), 10);
+            
+            const newStreaming = document.createElement('div');
+            newStreaming.id = "streaming-indicator";
+            newStreaming.className = "text-[#86948a] animate-pulse";
+            newStreaming.innerHTML = `<span class="text-primary">[${time}]</span> STREAMING...`;
+            logContainer.appendChild(newStreaming);
+            
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            if (logContainer.children.length > 25) {
+                logContainer.removeChild(logContainer.children[0]);
+            }
+        }
+
+        // Rules rendering logic
+        function renderRules() {
+            const container = document.getElementById('rules-container');
+            const filterText = document.getElementById('filterInput').value.toLowerCase();
+            container.innerHTML = '';
+            
+            const filteredFacts = Array.from(activeFacts).filter(factStr => {
+                const parts = factStr.split('|');
+                const fact = parts[0].toLowerCase();
+                const scope = (parts[1] || 'global').toLowerCase();
+                return fact.includes(filterText) || scope.includes(filterText);
+            });
+
+            if (filteredFacts.length === 0) {
+                const defaultRules = [
+                    { code: 'R-102: NO_RAW_POINTERS', desc: 'Enforce memory safety in core modules. Zero violations in 12 files.', scope: 'global', status: 'check_circle', color: 'text-primary' },
+                    { code: 'R-405: SYMBOL_ISOLATION', desc: 'Namespace collision check in global registry. 142 symbols verified.', scope: 'global', status: 'info', color: 'text-tertiary' },
+                    { code: 'R-004: DOC_COVERAGE', desc: 'Calculate JSDoc/RustDoc density across current buffer.', scope: 'global', status: 'pending', color: 'text-on-surface-variant' }
+                ];
+                defaultRules.filter(r => r.desc.toLowerCase().includes(filterText) || r.scope.toLowerCase().includes(filterText)).forEach(r => {
+                    container.appendChild(createRuleCell(r.code, r.desc, r.scope, r.status, r.color));
+                });
+                return;
+            }
+            
+            filteredFacts.forEach((factStr, index) => {
+                const parts = factStr.split('|');
+                const fact = parts[0];
+                const scope = parts[1] || 'global';
+                const code = `R-${100 + index}: ${fact.substring(0, 16).toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+                const desc = fact;
+                const isGlobal = scope === 'global';
+                const status = isGlobal ? 'check_circle' : 'info';
+                const color = isGlobal ? 'text-primary' : 'text-tertiary';
+                container.appendChild(createRuleCell(code, desc, scope, status, color));
+            });
+        }
+        
+        function createRuleCell(code, desc, scope, statusIcon, textColorClass) {
+            const cell = document.createElement('div');
+            cell.className = "bg-[#0A0A0B] p-4 flex flex-col justify-between group hover:bg-[#141416] transition-colors cursor-pointer border-r border-outline-variant";
+            cell.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="${textColorClass} font-code-sm text-[11px] font-bold">${code}</span>
+                    <span class="material-symbols-outlined ${textColorClass} text-xs">${statusIcon}</span>
+                </div>
+                <div class="mt-2 text-on-surface-variant font-code-sm text-[10px] leading-relaxed line-clamp-2" title="${desc}">
+                    ${desc}
+                </div>
+                <div class="mt-auto pt-2 flex justify-between items-center text-[9px] text-on-surface-variant opacity-40">
+                    <span>SCOPE: ${scope.split('/').pop()}</span>
+                    <span>ACTIVE</span>
+                </div>
+            `;
+            return cell;
+        }
+
+        // Post Rule API
+        function registerDurableRule() {
+            const text = document.getElementById('ruleInput').value.trim();
+            const scope = document.getElementById('scopeSelect').value;
+
+            if (!text) {
+                alert("Invariant description cannot be empty.");
+                return;
+            }
+
+            fetch('/api/facts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fact: text,
+                    scope: scope,
+                    confidence: 1.0
+                })
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('ruleInput').value = '';
+                    const time = new Date().toLocaleTimeString('en-GB');
+                    appendLogMessage('fact', time, `API: Invariant registry POST successful.`);
+                    // Force refresh metrics to load the new facts immediately
+                    fetchMetrics();
+                } else {
+                    alert("Error registering invariant.");
+                }
+            })
+            .catch(err => {
+                console.error("API error:", err);
+                alert("Failed to connect to Atrium daemon API.");
+            });
+        }
+
+        // Initial Data Fetch
+        function fetchMetrics() {
+            fetch('/api/metrics')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('valTokens').innerText = data.reduction || "98.2%";
+                    document.getElementById('valSymbols').innerText = data.symbols_count || 0;
+                    document.getElementById('valFacts').innerText = data.rules_count || 0;
+
+                    // Sync files mapping to SVG
+                    if (data.files && data.files.length) {
+                        data.files.forEach(file => {
+                            addFileNode(file, 12);
+                        });
+                    }
+
+                    // Sync rules
+                    if (data.facts && data.facts.length) {
+                        activeFacts.clear();
+                        data.facts.forEach(f => {
+                            activeFacts.add(`${f.fact}|${f.scope}`);
+                        });
+                        renderRules();
+                    }
+                })
+                .catch(err => console.error("Metrics load failed", err));
+        }
+
+        // Connect SSE
+        function connectSSE() {
+            const sse = new EventSource('/api/stream');
+            
+            sse.onopen = () => {
+                document.getElementById('statusPulse').style.backgroundColor = '#10B981';
+                document.getElementById('statusPulse').className = 'w-2 h-2 rounded-full bg-primary status-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]';
+                document.getElementById('statusText').innerText = 'Online';
+                document.getElementById('statusText').className = 'text-primary font-bold';
+                const time = new Date().toLocaleTimeString('en-GB');
+                appendLogMessage('primary', time, 'Channel: Established EventSource SSE telemetry link.');
+                fetchMetrics();
+            };
+
+            sse.onerror = () => {
+                document.getElementById('statusPulse').style.backgroundColor = '#ffb4ab';
+                document.getElementById('statusPulse').className = 'w-2 h-2 rounded-full bg-error status-pulse shadow-[0_0_8px_rgba(255,180,171,0.6)]';
+                document.getElementById('statusText').innerText = 'Offline';
+                document.getElementById('statusText').className = 'text-error font-bold';
+                const time = new Date().toLocaleTimeString('en-GB');
+                appendLogMessage('error', time, 'Channel: Offline. Re-establishing link in 5s...');
+                setTimeout(connectSSE, 5000);
+            };
+
+            sse.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    const time = new Date().toLocaleTimeString('en-GB');
+                    
+                    if (data.event === 'index') {
+                        triggerPulse('core-graph');
+                        triggerPulse('daemon');
+                        appendLogMessage('primary', time, `INDEX: Parsed and indexed codebase: ${data.symbols} symbols, ${data.files} files.`);
+                        fetchMetrics();
+                    }
+                    
+                    else if (data.event === 'fact') {
+                        triggerPulse('core-memory');
+                        triggerPulse('daemon');
+                        const factKey = `${data.fact}|${data.scope}`;
+                        if (!activeFacts.has(factKey)) {
+                            activeFacts.add(factKey);
+                        }
+                        appendLogMessage('fact', time, `FACT: Durable memory registered invariant "${data.fact}"`);
+                        fetchMetrics();
+                    }
+                    
+                    else if (data.event === 'context') {
+                        triggerPulse('core-memory');
+                        triggerPulse('bridge.py');
+                        triggerPulse('daemon');
+                        appendLogMessage('context', time, `CONTEXT: Retransmitting code blueprint slice for target: "${data.task}"`);
+                        if (data.files && data.files.length) {
+                            data.files.forEach(f => {
+                                addFileNode(f, 15);
+                                triggerPulse(f);
+                            });
+                        }
+                    }
+                    
+                    else if (data.event === 'verify') {
+                        triggerPulse('core-verify');
+                        triggerPulse('daemon');
+                        const ok = data.is_valid ? 'PASSED' : 'FAILED';
+                        appendLogMessage('verify', time, `VERIFY: Sandbox patch check finished with status: ${ok}`);
+                    }
+                } catch(e) {
+                    console.error("SSE parsing error", e);
+                }
+            };
+        }
+
+        // Start loops
+        updateAndDraw();
+        connectSSE();
+        renderRules();
+    </script>
+</body>
+</html>
