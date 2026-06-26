@@ -1,0 +1,58 @@
+name: Release Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: windows
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: atriumd-windows-x64.exe
+          - os: linux
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: atriumd-linux-x64
+          - os: macos
+            runner: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: atriumd-macos-arm64
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux Build Essentials
+        if: matrix.os == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Compile Optimized Production Binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Stage and Rename Asset Binaries
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            mv target/${{ matrix.target }}/release/atriumd.exe target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          else
+            mv target/${{ matrix.target }}/release/atriumd target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          fi
+
+      - name: Automatically Upload to Release Assets Page
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

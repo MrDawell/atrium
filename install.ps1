@@ -88,9 +88,15 @@ if (Get-Command python -ErrorAction SilentlyContinue) {
 
 # 6. Automatically register Atrium MCP settings in editors
 Write-Host "Registering Atrium in Claude Code, Cursor, Cline, and Continue..."
-$bridgePath = Join-Path $PSScriptRoot "api\bridge.py"
+$bridgePath = ""
+if (-not [string]::IsNullOrEmpty($PSScriptRoot)) {
+    $bridgePath = Join-Path $PSScriptRoot "api\bridge.py"
+} else {
+    $bridgePath = Join-Path (Get-Location).Path "api\bridge.py"
+}
+
 try {
-    if (Test-Path $bridgePath) {
+    if (-not [string]::IsNullOrEmpty($bridgePath) -and (Test-Path $bridgePath)) {
         Start-Process -FilePath $targetPath -ArgumentList "--register --bridge-path `"$bridgePath`"" -NoNewWindow -Wait
     } else {
         Start-Process -FilePath $targetPath -ArgumentList "--register" -NoNewWindow -Wait
