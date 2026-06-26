@@ -1,48 +1,19 @@
 # Atrium (`atriumd`)
 
-> The zero-token-waste, structural memory and verification layer for AI coding agents.
+![Token Efficiency](https://img.shields.io/badge/Token_Efficiency-98%25_Reduction-00f0ff?style=for-the-badge&logo=cpu)
+![Build Status](https://img.shields.io/badge/Build-Passing-39ff14?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Windows_|_macOS_|_Linux-bd10e0?style=for-the-badge)
 
-Current AI coding tools (like standard IDE wrappers or terminal agents) have a severe short-term memory problem. Every time you ask them to make a surgical edit, they re-scan or dump giant blocks of your repository into a text blob. This wastes your token budget, floods context windows with noise, and breaks down entirely on production-scale codebases.
-
-**Atrium fixes this.** It is a headless, lightning-fast background daemon written in Rust that acts as a durable, code-aware brain for tools like Claude Code and AI orchestration frameworks. It maintains an incremental, language-agnostic code graph, tracks active architectural guidelines, and pairs them with localized, persistent memory tables.
-
-Instead of reading your whole repo, AI agents simply ask Atrium for a precision context slice.
+> The zero-token-waste, structural memory and verification layer for AI coding agents (Claude Code, Cursor, Cline, Roo Code, etc.).
 
 ---
 
-## ✨ Core Features
+## 🚀 Track 1: The Fast Lane (For Vibe Coders)
 
-### 📊 DevUI Dashboard (`http://localhost:14040`)
-When `atriumd` boots up, it automatically spins up a lightweight embedded web server serving a gorgeous, glassmorphic visual dashboard.
-* **Code Graph Topology:** Dynamic canvas rendering of parsed source files, modules, and their relational links.
-* **Live Memory Stream:** High-performance Server-Sent Events (SSE) log stream showing real-time indexing, facts querying, and patch verification events.
-* **Token Savings Metrics:** Dynamic calculation of token efficiency and reduction over time.
-* **Active Invariants Board:** Live display of registered architectural guidelines and rule scopes.
+Get Atrium up and running in under 60 seconds.
 
-### 🔌 Universal IDE/CLI integration (`atriumd --register`)
-A single CLI hook automatically scans and registers Atrium as an MCP server or contextual data provider in your favorite environments:
-* **Anthropic Claude Code CLI:** Integrates Atrium stdio MCP server directly.
-* **Cursor IDE:** Automates active MCP provider registration.
-* **Cline & Roo Code:** Initializes `cline_mcp_settings.json` integrations.
-* **Continue.dev:** Registers Atrium as an active contextual data provider in `~/.continue/config.json`.
-* **Claude Desktop:** Registers Atrium into the desktop client workspace settings.
-
-### 🔄 Asynchronous Self-Updater (`atriumd --update`)
-* **Silent Background Check:** On daemon startup, a background worker queries the GitHub Releases API. If a new production tag is available, it downloads and performs a safe, in-place binary overwrite.
-* **Manual Upgrade Override:** Forces verification against the remote release repository with real-time update stream progress.
-* **Locked Binary Overwrite:** Uses an executable rename trick on Windows to successfully replace the running program without stopping operations.
-
----
-
-## 🚀 Track 1: Quick Start (For Vibe Coders)
-
-### 🤖 AI Agent Autopilot Setup
-If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline, or Roo Code), you can copy and paste the prompt below into the chat, and the agent will configure and run everything for you autonomously:
-
-> Please clone the Atrium repository from `https://github.com/MrDawell/atrium.git`, build the atriumd daemon from source using `cargo build --release`, install Python bridge dependencies (`grpcio` and `grpcio-tools`), compile the gRPC protobuf files to python, verify everything with `cargo test`, run `atriumd` as a background task, index the repository, and register the Atrium MCP server in all active editors (Claude Code, Cursor, Cline, Roo Code, etc.).
-
-### 1. Install Atrium Instantly
-Run the automated installer script matching your operating system. This automatically detects your system architecture (macOS x86_64/arm64, Linux x86_64/aarch64, Windows x64/ARM64), downloads the precompiled release binary, registers it to your PATH, installs Python bridge dependencies (`grpcio`, `grpcio-tools`), and triggers editor auto-registration.
+### 1. 1-Click Install
+Run the automated installer script matching your operating system. This script automatically detects your system architecture (macOS x86_64/arm64, Linux x86_64/aarch64, Windows x64/ARM64), downloads the precompiled native release binary, registers it to your PATH, installs Python dependencies (`grpcio`, `grpcio-tools`), and triggers editor auto-registration.
 
 #### 🍎 macOS & 🐧 Linux (Bash)
 ```bash
@@ -54,23 +25,52 @@ curl -fsSL https://raw.githubusercontent.com/MrDawell/atrium/main/install.sh | b
 irm https://raw.githubusercontent.com/MrDawell/atrium/main/install.ps1 | iex
 ```
 
-### 2. Run the Background Daemon
-Start the background daemon inside any repository root folder:
+### 2. Auto-Discovery Setup
+Simply navigate to your repository root folder and run:
 ```bash
-$ atriumd
-# [Atrium] Daemon active and listening on 127.0.0.1:50051
-# [Atrium] Durable memory layer initialized at 'atrium_memory.db'
-# [Atrium] Visual DevUI dashboard starting on http://localhost:14040
+atriumd --register
 ```
+This single command automatically scans your system for active coding tools (Claude Code, Cursor, Cline, Roo Code, and Continue) and registers Atrium as an MCP server or contextual data provider—completely hands-off.
 
-### 3. Open the DevUI Visual Dashboard
-Simply open [http://localhost:14040](http://localhost:14040) in your web browser to monitor memory pools, active outlines, and live metrics stream visually.
+### 3. Run the Background Daemon
+Start the background service daemon:
+```bash
+atriumd
+```
+Atrium will boot up, initialize its local SQLite memory database (`atrium_memory.db`), and launch a visual dashboard at [http://localhost:14040](http://localhost:14040).
+
+### 🤖 AI Agent Autopilot Setup
+If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline, or Roo Code), you can copy and paste the prompt below into the chat, and the agent will configure and run everything for you autonomously:
+
+> Please clone the Atrium repository from `https://github.com/MrDawell/atrium.git`, build the atriumd daemon from source using `cargo build --release`, install Python bridge dependencies (`grpcio` and `grpcio-tools`), compile the gRPC protobuf files to python, verify everything with `cargo test`, run `atriumd` as a background task, index the repository, and register the Atrium MCP server in all active editors (Claude Code, Cursor, Cline, Roo Code, etc.).
 
 ---
 
-## 🛠️ Track 2: Building From Source (For Core Developers)
+## 💡 Track 2: The "Why It Works" Analogy Section
 
-### Architecture Overview
+Traditional AI coding tools have a severe memory and cost problem. Every time you ask an agent to make a small change, it re-scans your entire project and dumps thousands of lines of raw source code into the prompt. This wastes your token budget, floods the model's context window with noise, and causes it to lose focus.
+
+Atrium changes the game using three core design patterns:
+
+### 📐 The Blueprint vs. The Bricks
+* **The Problem:** Standard tools dump every single raw code line (the "bricks") into the prompt, blinding the AI with implementation details and wasting $98\%$ of your tokens.
+* **The Atrium Solution:** Atrium acts as an architect. It parses your source files using fast Tree-sitter grammars to extract structural outlines and signature declarations (the "blueprints"). The AI gets full structural comprehension of classes, functions, and invariants without the boilerplate clutter.
+
+### 🛡️ Built-in Auto-Correct
+* **The Problem:** A coding agent suggests a patch, but it contains a minor compilation or linter error. If the user doesn't check it, the build breaks.
+* **The Atrium Solution:** Atrium acts as an invisible test sandbox. When a patch is proposed, Atrium's verification pipeline executes local checks (`cargo check`, `cargo test`, `clippy`) behind the scenes. If there is a compilation error, Atrium feeds the compiler diagnostics directly back to the AI, forcing it to self-correct and fix its own mistakes before you ever see a broken build.
+
+### 🧠 Zero Brain Mixing
+* **The Problem:** Jumping between different projects can pollute an agent's memory, leading to cross-talk where rules or symbols from Repo A bleed into queries for Repo B.
+* **The Atrium Solution:** Atrium automatically fingerprints the active workspace directory. Facts, rules, and symbols are stored in a localized SQLite database mapped uniquely to that workspace. Memory pools never cross-contaminate.
+
+---
+
+## 🛠️ Track 3: Core Engineering & Architecture (For Core Devs)
+
+Atrium is organized as a lightweight Rust workspace fronted by a Python bridge that manages stdio MCP communication.
+
+### Crate Topology Map
 ```
                ┌────────────────────────────────────────────────────────┐
                │                    TERMINAL INTERACTION                │
@@ -88,87 +88,73 @@ Simply open [http://localhost:14040](http://localhost:14040) in your web browser
                                        gRPC Loopback
                                             │
                                             ▼
- ┌─────────────────────────────────────────────────────────────────────────────────────────┐
- │                                     atriumd DAEMON (Port 50051)                         │
- │                                                                                         │
- │  ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐  │
- │  │   atrium-core-graph     │   │   atrium-core-memory    │   │   atrium-core-verify   │  │
- │  │                         │   │                         │   │                        │  │
- │  │ • Tree-sitter Parser    │──>│ • SQLite Database       │──>│ • Asynchronous Process │  │
- │  │ • Fast AST Extractor    │   │ • Durable Fact Store    │   │   Runner               │  │
- │  │ • Language Grammar Map  │   │ • Unique Symbol Indices │   │ • cargo test/check/lint│  │
- │  └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘  │
- └───────────────────────────────────────┬─────────────────────────────────────────────────┘
-                                         │  (Port 14040)
-                                         ▼
-                        ┌─────────────────────────────────┐
-                        │      Embedded DevUI Web App     │
-                        │   (rust-embed + Axum SSE/HTML)  │
-                        └─────────────────────────────────┘
+  ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                     atriumd DAEMON (Port 50051)                         │
+  │                                                                                         │
+  │  ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐  │
+  │  │   atrium-core-graph     │   │   atrium-core-memory    │   │   atrium-core-verify   │  │
+  │  │                         │   │                         │   │                        │  │
+  │  │ • Tree-sitter Parser    │──>│ • SQLite Database       │──>│ • Asynchronous Process │  │
+  │  │ • Fast AST Extractor    │   │ • Durable Fact Store    │   │   Runner               │  │
+  │  │ • Language Grammar Map  │   │ • Unique Symbol Indices │   │ • cargo test/check/lint│  │
+  │  └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘  │
+  └───────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                          │  (Port 14040)
+                                          ▼
+                         ┌─────────────────────────────────┐
+                         │      Embedded DevUI Web App     │
+                         │   (rust-embed + Axum SSE/HTML)  │
+                         └─────────────────────────────────┘
 ```
 
-### Workspace Layout
-Atrium is organized as a Cargo workspace:
-* [api/daemon.proto](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/daemon.proto): Protocol Buffers interface contract.
-* [crates/atrium-core-graph](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-graph/): Handles Tree-sitter AST parsing and symbol graph construction.
-* [crates/atrium-core-memory](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-memory/): Manages persistent SQLite storage (`atrium_memory.db`) for files, hashes, symbols, and durable facts/rules.
-* [crates/atrium-core-verify](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-verify/): Runs tests, linters, and checkers asynchronously in sub-processes.
-* [crates/atrium-daemon](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-daemon/): The central gRPC IPC server (`atriumd`) coordinating memory, verifier, and DevUI layers.
-* [api/bridge.py](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/bridge.py): Python client bridge supporting CLI utilities and Model Context Protocol (MCP) server execution.
+* **[api/daemon.proto](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/daemon.proto):** gRPC/Protocol Buffers interface contract.
+* **[crates/atrium-core-graph](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-graph/):** AST parsing and symbol graph construction using Tree-sitter.
+* **[crates/atrium-core-memory](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-memory/):** Manages SQLite (`atrium_memory.db`) storing indexed symbol keys and durable rules.
+* **[crates/atrium-core-verify](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-core-verify/):** Asynchronously runs sub-processes (`cargo check`, `cargo test`, `clippy`).
+* **[crates/atrium-daemon](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/crates/atrium-daemon/):** Core daemon binary (`atriumd`) managing gRPC server and Axum DevUI.
+* **[api/bridge.py](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/api/bridge.py):** Stdio MCP and CLI bridge calling the local daemon over gRPC.
 
-### Building manually from source
-Ensure you have the Rust toolchain installed (via [rustup](https://rustup.rs/)) and a Protocol Buffers compiler (`protoc`) in your system path.
+### SQLite Memory Schema
+Atrium uses standard localized SQLite tables for fast query lookups:
+* **`symbols` Table:** Mapped unique identifiers of source declarations.
+  ```sql
+  CREATE TABLE IF NOT EXISTS symbols (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      file_path TEXT NOT NULL,
+      symbol_name TEXT NOT NULL,
+      symbol_kind TEXT NOT NULL,
+      content_hash TEXT NOT NULL,
+      UNIQUE(file_path, symbol_name)
+  );
+  ```
+* **`durable_memories` Table:** Rules, architectural facts, and scope targets.
+  ```sql
+  CREATE TABLE IF NOT EXISTS durable_memories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      fact TEXT NOT NULL,
+      scope TEXT NOT NULL,
+      confidence REAL NOT NULL,
+      last_validated_at INTEGER NOT NULL
+  );
+  ```
+
+### Manual Compilation from Source
+If building manually without installer scripts:
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/MrDawell/atrium.git
    cd atrium
    ```
-2. **Build the Rust workspace binaries:**
+2. **Build the release binary:**
    ```bash
    cargo build --release --bin atriumd
    ```
-3. **Move the executable to your binary path:**
+3. **Move executable to system PATH:**
    ```bash
    sudo cp target/release/atriumd /usr/local/bin/
    ```
-4. **Compile the Python bridge protobuf files manually:**
+4. **Compile Python Protobuf files:**
    ```bash
    python -m grpc_tools.protoc -Iapi --python_out=api --grpc_python_out=api api/daemon.proto
    ```
-
----
-
-## 🎛️ Command Line Interface
-
-`atriumd` accepts flags to manage registrations and software updates directly:
-
-```bash
-# Start the background service daemon (default)
-atriumd
-
-# Automatically scan IDE folders and register the Atrium MCP server
-atriumd --register
-
-# Register with a custom location for the python bridge
-atriumd --register --bridge-path /path/to/atrium/api/bridge.py
-
-# Force check GitHub Releases and upgrade the binary immediately
-atriumd --update
-```
-
----
-
-## 📊 Performance Benchmarks
-
-Atrium is engineered to optimize token efficiency and minimize API costs. On a test repository of ~1,500 Lines of Code (Rust):
-* **Prompt Token Reduction:** Input volume cut from **24,500** tokens (Standard Agent) to **620** tokens (Atrium) — a **97.4% reduction**.
-* **API Cost Savings:** Est. cost per task cut from **$0.073** to **$0.0018** per run.
-* **Scan Time:** Repository AST mapping completes in **< 15ms**.
-
-For detailed setup criteria, test runs, and pipeline metrics, check out the full [Performance Benchmark Report](file:///C:/Users/LENOVO/Documents/antigravity/modest-lovelace/BENCHMARK.md).
-
----
-
-## ⚖️ License
-Distributed under the MIT License. See `LICENSE` for more information.

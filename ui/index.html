@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrium DevUI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Atrium DevUI - Agentic Brain Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(20, 28, 48, 0.45);
+            --bg-color: #050814;
+            --card-bg: rgba(10, 15, 30, 0.65);
             --card-border: rgba(255, 255, 255, 0.08);
-            --accent: #50e3c2;
-            --accent-glow: rgba(80, 227, 194, 0.4);
-            --blue: #4a90e2;
-            --blue-glow: rgba(74, 144, 226, 0.4);
-            --purple: #bd10e0;
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
+            --accent-cyan: #00f0ff;
+            --accent-cyan-glow: rgba(0, 240, 255, 0.4);
+            --accent-purple: #bd10e0;
+            --accent-purple-glow: rgba(189, 16, 224, 0.4);
+            --accent-pink: #ff007f;
+            --accent-pink-glow: rgba(255, 0, 127, 0.4);
+            --accent-green: #39ff14;
+            --accent-green-glow: rgba(57, 255, 20, 0.4);
+            --accent-gold: #ffaa00;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --font-outfit: 'Outfit', sans-serif;
+            --font-inter: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         * {
@@ -26,14 +33,33 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-inter);
             background-color: var(--bg-color);
             color: var(--text-primary);
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(74, 144, 226, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(189, 16, 224, 0.05) 0%, transparent 40%);
             min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(189, 16, 224, 0.06) 0%, transparent 40%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan-glow);
         }
 
         header {
@@ -42,24 +68,24 @@
             align-items: center;
             padding: 20px 40px;
             border-bottom: 1px solid var(--card-border);
-            backdrop-filter: blur(10px);
-            background-color: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(20px);
+            background-color: rgba(5, 8, 20, 0.85);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .logo {
-            font-family: 'Outfit', sans-serif;
-            font-size: 24px;
+            font-family: var(--font-outfit);
+            font-size: 26px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--blue), var(--accent));
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo::before {
@@ -67,200 +93,462 @@
             display: inline-block;
             width: 14px;
             height: 14px;
-            background-color: var(--accent);
+            background-color: var(--accent-cyan);
             border-radius: 3px;
-            box-shadow: 0 0 10px var(--accent-glow);
+            box-shadow: 0 0 12px var(--accent-cyan-glow);
         }
 
         .status-badge {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
+            padding: 8px 18px;
             border-radius: 20px;
-            background: rgba(80, 227, 194, 0.1);
-            border: 1px solid rgba(80, 227, 194, 0.2);
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
             font-size: 13px;
             font-weight: 600;
-            color: var(--accent);
-            box-shadow: 0 0 10px rgba(80, 227, 194, 0.05);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
         }
 
         .status-pulse {
             width: 8px;
             height: 8px;
-            background-color: var(--accent);
+            background-color: var(--accent-cyan);
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1.6s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--accent-glow); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(80, 227, 194, 0); }
-            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(80, 227, 194, 0); }
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--accent-cyan-glow); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 240, 255, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
         }
 
         .dashboard {
-            max-width: 1600px;
+            max-width: 1650px;
+            width: 100%;
             margin: 0 auto;
             padding: 30px 40px;
             display: grid;
             grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
             gap: 30px;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
-            padding: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(25px);
+            padding: 26px;
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
+            font-family: var(--font-outfit);
+            font-size: 20px;
             font-weight: 600;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* View Toggle Mode Buttons */
+        .view-toggles {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .toggle-btn {
+            font-family: var(--font-inter);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .toggle-btn:hover {
             color: var(--text-primary);
         }
 
+        .toggle-btn.active {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--accent-cyan);
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        /* Metrics grid design */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            grid-column: span 2;
         }
 
         .metric-card {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.015);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+            border-radius: 16px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 8px;
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .metric-value {
-            font-family: 'Outfit', sans-serif;
-            font-size: 32px;
+            font-family: var(--font-outfit);
+            font-size: 38px;
             font-weight: 800;
-            color: var(--text-primary);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #ffffff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-value.savings {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .metric-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-weight: 700;
         }
 
-        .graph-container {
-            height: 480px;
+        /* 2D/3D Canvas Container */
+        .graph-outer {
             position: relative;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: grab;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        .graph-outer:active {
+            cursor: grabbing;
         }
 
-        .console-container {
-            height: 480px;
-            background: rgba(5, 7, 12, 0.95);
-            border-radius: 12px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: #a7b8cc;
-            overflow-y: auto;
-            border: 1px solid var(--card-border);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        .canvas-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 16px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .canvas-hint::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan);
+        }
+
+        /* Fact Registry Section */
+        .registry-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border-right: 1px solid var(--card-border);
+            padding-right: 22px;
+        }
+
+        .facts-display-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .input-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .log-entry {
-            display: flex;
-            gap: 10px;
-            line-height: 1.5;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .log-time {
-            color: var(--blue);
-            flex-shrink: 0;
-        }
-
-        .log-tag {
-            font-weight: bold;
-            padding: 1px 5px;
-            border-radius: 3px;
-            font-size: 11px;
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .tag-index { background: rgba(80, 227, 194, 0.15); color: var(--accent); }
-        .tag-fact { background: rgba(189, 16, 224, 0.15); color: var(--purple); }
-        .tag-context { background: rgba(74, 144, 226, 0.15); color: var(--blue); }
-        .tag-verify { background: #dfa01040; color: #dfa010; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-family: var(--font-inter);
+            font-size: 13px;
+            transition: border-color 0.25s, box-shadow 0.25s;
         }
 
-        .rules-card {
-            grid-column: span 2;
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+        }
+
+        .input-select {
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: #000;
+            font-weight: 700;
+            font-family: var(--font-outfit);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .filter-search {
+            margin-bottom: 8px;
         }
 
         .rules-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
+            padding-right: 6px;
         }
 
         .rule-item {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 14px 18px;
+            border-radius: 10px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
+            transition: background 0.2s;
+        }
+
+        .rule-item:hover {
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .rule-text {
-            font-size: 14px;
+            font-size: 13.5px;
             line-height: 1.4;
         }
 
-        .rule-scope {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px 8px;
-            border-radius: 4px;
+        .rule-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 11px;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+        }
+
+        .rule-badge.global {
+            background: rgba(189, 16, 224, 0.1);
+            color: #d156eb;
+            border-color: rgba(189, 16, 224, 0.2);
+        }
+
+        /* SSE Stream Console */
+        .console-container {
+            height: 480px;
+            background: rgba(2, 4, 10, 0.95);
+            border-radius: 14px;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: #94a3b8;
+            overflow-y: auto;
+            border: 1px solid var(--card-border);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 12px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .log-time {
+            color: #4a5568;
+            flex-shrink: 0;
+        }
+
+        .log-tag {
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tag-index { background: rgba(57, 255, 20, 0.12); color: var(--accent-green); border: 1px solid rgba(57, 255, 20, 0.2); }
+        .tag-fact { background: rgba(189, 16, 224, 0.12); color: #d156eb; border: 1px solid rgba(189, 16, 224, 0.2); }
+        .tag-context { background: rgba(0, 240, 255, 0.12); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.2); }
+        .tag-verify { background: rgba(255, 170, 0, 0.12); color: var(--accent-gold); border: 1px solid rgba(255, 170, 0, 0.2); }
+        .tag-system { background: rgba(255, 255, 255, 0.08); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.15); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 3D Tooltip Overlay */
+        .graph-tooltip {
+            position: absolute;
+            background: rgba(10, 15, 30, 0.85);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(15px);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--text-primary);
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 10;
+        }
+
+        .tooltip-title {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
             color: var(--text-secondary);
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 14px 24px;
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.2);
+            color: var(--text-primary);
+            font-family: var(--font-inter);
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast::before {
+            content: '✓';
+            color: var(--accent-green);
+            font-weight: bold;
         }
     </style>
 </head>
@@ -270,63 +558,116 @@
         <div class="logo">ATRIUM</div>
         <div class="status-badge">
             <div class="status-pulse" id="statusPulse"></div>
-            <span id="statusText">Active</span>
+            <span id="statusText">Awaiting Daemon</span>
         </div>
     </header>
 
     <main class="dashboard">
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-value" id="valTokens">0%</div>
-                <div class="metric-label">Token Savings</div>
+        <div class="left-column">
+            <!-- Stats -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value savings" id="valTokens">97.4%</div>
+                    <div class="metric-label">Estimated Token Reduction</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="valSymbols">0</div>
+                    <div class="metric-label">Parsed Symbols</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="valFacts">0</div>
+                    <div class="metric-label">Stored Guidelines</div>
+                </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-value" id="valSymbols">0</div>
-                <div class="metric-label">Symbols Map</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value" id="valFacts">0</div>
-                <div class="metric-label">Durable Facts</div>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-title">Code Graph Topology <span style="font-size:12px; color:var(--text-secondary)">Pulsing active modules</span></div>
-            <div class="graph-container">
-                <canvas id="graphCanvas"></canvas>
+            <!-- 2D/3D Graph Board -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Code Graph Spatial Topology</div>
+                    <div class="view-toggles">
+                        <button class="toggle-btn" id="btn2D" onclick="setViewMode('2D')">2D Flat Map</button>
+                        <button class="toggle-btn active" id="btn3D" onclick="setViewMode('3D')">3D Orbital Tree</button>
+                    </div>
+                </div>
+                <div class="graph-outer" id="canvasContainer">
+                    <div class="graph-tooltip" id="nodeTooltip"></div>
+                    <canvas id="graphCanvas"></canvas>
+                    <div class="canvas-hint" id="canvasHint">Hold click & drag mouse to rotate spatial graph</div>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-title">Live Memory Stream <span style="font-size:12px; color:var(--accent)">SSE Stream</span></div>
-            <div class="console-container" id="consoleLogs">
-                <div class="log-entry">
-                    <span class="log-time">[System]</span>
-                    <span class="log-tag tag-index" style="background:rgba(255,255,255,0.1); color:#fff">Boot</span>
-                    <span>Atrium DevUI attached. Awaiting daemon events...</span>
+            <!-- Invariant Registry -->
+            <div class="card">
+                <div class="card-title">Architectural Rules & Facts Registry</div>
+                <div class="registry-panel">
+                    <!-- Form -->
+                    <div class="form-section">
+                        <div class="input-group">
+                            <label class="input-label" for="ruleInput">Durable Guideline / Invariant</label>
+                            <input class="input-field" type="text" id="ruleInput" placeholder="e.g. Always use standard library errors, not anyhow">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" for="scopeSelect">Scope Mapping</label>
+                            <select class="input-field input-select" id="scopeSelect">
+                                <option value="global">global</option>
+                            </select>
+                        </div>
+                        <button class="submit-btn" onclick="registerDurableRule()">Register Guideline</button>
+                    </div>
+                    <!-- Display -->
+                    <div class="facts-display-section">
+                        <input class="input-field filter-search" type="text" id="filterInput" placeholder="🔍 Filter guidelines by text or scope..." oninput="renderFactsList()">
+                        <div class="rules-list" id="rulesList">
+                            <div style="color:var(--text-secondary); font-size:13px; text-align:center; padding: 30px;">No guidelines registered in database.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card rules-card">
-            <div class="card-title">Active Rules & Architectural Invariants</div>
-            <div class="rules-list" id="rulesList">
-                <div style="color:var(--text-secondary); font-size:14px; text-align:center; padding: 20px;">No facts or guidelines registered in localized memory.</div>
+        <div class="right-column">
+            <!-- DevUI Live Stream Console -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Live Memory SSE Stream</div>
+                </div>
+                <div class="console-container" id="consoleLogs">
+                    <div class="log-entry">
+                        <span class="log-time">[System]</span>
+                        <span class="log-tag tag-system">Boot</span>
+                        <span>DevUI Console Attached. Connecting to gRPC SSE stream...</span>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
+    <div class="toast" id="toast">Rule successfully saved to SQLite.</div>
+
     <script>
-        // Setup Canvas Graph Visualizer
+        // Setup Canvas
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
+        const tooltip = document.getElementById('nodeTooltip');
+        const hintText = document.getElementById('canvasHint');
+
+        let viewMode = '3D'; // default
+        let isMouseDown = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
         
+        // 3D Angles
+        let angleX = 0.005;
+        let angleY = 0.005;
+
+        // Custom Nodes & Connections
         let nodes = [
-            { id: 'bridge.py', label: 'bridge.py', x: 100, y: 240, r: 12, color: '#4a90e2', pulse: 0 },
-            { id: 'daemon', label: 'atriumd', x: 250, y: 240, r: 18, color: '#bd10e0', pulse: 0 },
-            { id: 'core-graph', label: 'core-graph', x: 420, y: 120, r: 14, color: '#50e3c2', pulse: 0 },
-            { id: 'core-memory', label: 'core-memory', x: 420, y: 240, r: 14, color: '#50e3c2', pulse: 0 },
-            { id: 'core-verify', label: 'core-verify', x: 420, y: 360, r: 14, color: '#50e3c2', pulse: 0 },
+            { id: 'bridge.py', label: 'api/bridge.py', x3d: -150, y3d: 0, z3d: 0, x: 0, y: 0, z: 0, r: 12, color: '#00f0ff', pulse: 0, info: 'Python CLI / Stdio MCP Server' },
+            { id: 'daemon', label: 'atriumd (daemon)', x3d: 0, y3d: 0, z3d: 0, x: 0, y: 0, z: 0, r: 18, color: '#bd10e0', pulse: 0, info: 'gRPC IPC Orchestrator Core' },
+            { id: 'core-graph', label: 'atrium-core-graph', x3d: 150, y3d: -100, z3d: -80, x: 0, y: 0, z: 0, r: 13, color: '#39ff14', pulse: 0, info: 'Tree-sitter AST & Symbol Graph' },
+            { id: 'core-memory', label: 'atrium-core-memory', x3d: 150, y3d: 0, z3d: 100, x: 0, y: 0, z: 0, r: 13, color: '#ffaa00', pulse: 0, info: 'SQLite Fact Store & Memory Layer' },
+            { id: 'core-verify', label: 'atrium-core-verify', x3d: 150, y3d: 100, z3d: -80, x: 0, y: 0, z: 0, r: 13, color: '#ff007f', pulse: 0, info: 'Cargo Verification Process Pipeline' }
         ];
 
         let links = [
@@ -336,83 +677,272 @@
             { source: 'daemon', target: 'core-verify' }
         ];
 
+        // Dynamic extra nodes from files list
+        const activeFilesSet = new Set();
+
+        function addFileNode(filePath, symbolCount) {
+            if (nodes.find(n => n.id === filePath)) return;
+
+            // Compute circular spatial offset in 3D around core-memory
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 90 + Math.random() * 40;
+            const x3d = 150 + Math.cos(angle) * radius;
+            const y3d = Math.sin(angle) * radius;
+            const z3d = (Math.random() - 0.5) * 120;
+
+            nodes.push({
+                id: filePath,
+                label: filePath.split('/').pop(),
+                x3d,
+                y3d,
+                z3d,
+                x: 0, y: 0, z: 0,
+                r: 7 + Math.min(6, symbolCount / 10),
+                color: '#60a5fa',
+                pulse: 0,
+                info: `Indexed File. Found ${symbolCount} AST symbol declarations.`
+            });
+
+            // Connect to core-memory
+            links.push({ source: 'core-memory', target: filePath });
+            activeFilesSet.add(filePath);
+            updateScopeOptions();
+        }
+
+        function updateScopeOptions() {
+            const select = document.getElementById('scopeSelect');
+            // Keep global
+            select.innerHTML = '<option value="global">global</option>';
+            activeFilesSet.forEach(file => {
+                const opt = document.createElement('option');
+                opt.value = file;
+                opt.textContent = `file:${file.split('/').pop()} (${file})`;
+                select.appendChild(opt);
+            });
+        }
+
+        // Resize Canvas
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = rect.width;
-            canvas.height = rect.height;
-            // Distribute nodes evenly based on width
-            nodes[0].x = canvas.width * 0.15;
-            nodes[1].x = canvas.width * 0.40;
-            nodes[2].x = canvas.width * 0.75;
-            nodes[3].x = canvas.width * 0.75;
-            nodes[4].x = canvas.width * 0.75;
-
-            nodes[0].y = canvas.height * 0.5;
-            nodes[1].y = canvas.height * 0.5;
-            nodes[2].y = canvas.height * 0.25;
-            nodes[3].y = canvas.height * 0.5;
-            nodes[4].y = canvas.height * 0.75;
+            canvas.height = 420;
         }
-
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        function drawGraph() {
+        // Mode Toggler
+        function setViewMode(mode) {
+            viewMode = mode;
+            document.getElementById('btn2D').classList.toggle('active', mode === '2D');
+            document.getElementById('btn3D').classList.toggle('active', mode === '3D');
+            hintText.style.display = mode === '3D' ? 'flex' : 'none';
+        }
+        setViewMode('3D');
+
+        // Drag handlers for 3D rotation
+        container.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Node Hover Tooltip Check
+            let hoveredNode = null;
+            nodes.forEach(node => {
+                const dx = mouseX - node.x;
+                const dy = mouseY - node.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < node.r + 5) {
+                    hoveredNode = node;
+                }
+            });
+
+            if (hoveredNode) {
+                tooltip.style.left = `${mouseX + 16}px` ;
+                tooltip.style.top = `${mouseY + 16}px` ;
+                tooltip.innerHTML = `
+                    <div class="tooltip-title">${hoveredNode.label}</div>
+                    <div class="tooltip-row">${hoveredNode.info}</div>
+                    <div class="tooltip-row" style="margin-top: 4px; font-size:10px; color:#516173">ID: ${hoveredNode.id}</div>
+                `;
+                tooltip.style.display = 'block';
+            } else {
+                tooltip.style.display = 'none';
+            }
+
+            // Rotate sphere on drag
+            if (isMouseDown && viewMode === '3D') {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                angleY += deltaX * 0.005;
+                angleX += deltaY * 0.005;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        });
+
+        // 3D Matrix Projection & Physics Loop
+        const focusLength = 320;
+        function updateAndDraw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            if (viewMode === '3D') {
+                // Apply rotation matrices based on current angles
+                const cosX = Math.cos(angleX);
+                const sinX = Math.sin(angleX);
+                const cosY = Math.cos(angleY);
+                const sinY = Math.sin(angleY);
+
+                // Rotate & Project
+                nodes.forEach(node => {
+                    // Rotate Y
+                    const x1 = node.x3d * cosY - node.z3d * sinY;
+                    const z1 = node.x3d * sinY + node.z3d * cosY;
+
+                    // Rotate X
+                    const y2 = node.y3d * cosX - z1 * sinX;
+                    const z2 = node.y3d * sinX + z1 * cosX;
+
+                    // Scale factor for 3D depth perception
+                    const scale = focusLength / (focusLength + z2);
+                    node.x = centerX + x1 * scale;
+                    node.y = centerY + y2 * scale;
+                    node.z = z2;
+                    node.projScale = scale;
+                });
+
+                // Slow rotation deceleration
+                if (!isMouseDown) {
+                    angleX *= 0.98;
+                    angleY *= 0.98;
+                    // Keep minor idle rotation alive
+                    if (Math.abs(angleX) < 0.001) angleX = 0.0005;
+                    if (Math.abs(angleY) < 0.001) angleY = 0.0005;
+                }
+            } else {
+                // 2D Layout projection (stable horizontal tree)
+                nodes[0].x = centerX - 250; nodes[0].y = centerY;
+                nodes[1].x = centerX - 80;  nodes[1].y = centerY;
+                
+                // Distribute library components vertically
+                nodes[2].x = centerX + 100; nodes[2].y = centerY - 100;
+                nodes[3].x = centerX + 100; nodes[3].y = centerY;
+                nodes[4].x = centerX + 100; nodes[4].y = centerY + 100;
+
+                // Distribute files in a vertical tree column
+                let fileIdx = 0;
+                const fileNodes = nodes.slice(5);
+                fileNodes.forEach(f => {
+                    f.x = centerX + 260;
+                    f.y = centerY - 140 + (fileIdx * (280 / Math.max(1, fileNodes.length - 1)));
+                    fileIdx++;
+                });
+
+                nodes.forEach(n => {
+                    n.projScale = 1.0;
+                    n.z = 0;
+                });
+            }
 
             // Draw Links
             links.forEach(link => {
-                const sourceNode = nodes.find(n => n.id === link.source);
-                const targetNode = nodes.find(n => n.id === link.target);
-                if (sourceNode && targetNode) {
+                const s = nodes.find(n => n.id === link.source);
+                const t = nodes.find(n => n.id === link.target);
+                if (s && t) {
                     ctx.beginPath();
-                    ctx.moveTo(sourceNode.x, sourceNode.y);
-                    ctx.lineTo(targetNode.x, targetNode.y);
-                    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-                    ctx.lineWidth = 2;
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(t.x, t.y);
+
+                    if (viewMode === '3D') {
+                        // Depth-based link transparency
+                        const avgZ = (s.z + t.z) / 2;
+                        const opacity = Math.max(0.04, Math.min(0.25, (focusLength - avgZ) / focusLength));
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                    } else {
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+                    }
+                    ctx.lineWidth = 1.5;
                     ctx.stroke();
 
-                    // Pulse flow representation
-                    if (sourceNode.pulse > 0.05) {
+                    // Pulse representation
+                    if (s.pulse > 0.05) {
                         ctx.beginPath();
-                        const grad = ctx.createLinearGradient(sourceNode.x, sourceNode.y, targetNode.x, targetNode.y);
-                        grad.addColorStop(0, 'rgba(80, 227, 194, 0.8)');
+                        ctx.moveTo(s.x, s.y);
+                        ctx.lineTo(t.x, t.y);
+                        
+                        const grad = ctx.createLinearGradient(s.x, s.y, t.x, t.y);
+                        grad.addColorStop(0, 'rgba(0, 240, 255, 0.7)');
+                        grad.addColorStop(0.5, 'rgba(189, 16, 224, 0.4)');
                         grad.addColorStop(1, 'transparent');
+
                         ctx.strokeStyle = grad;
-                        ctx.lineWidth = 3;
+                        ctx.lineWidth = 2.5;
                         ctx.stroke();
                     }
                 }
             });
 
-            // Draw Nodes
-            nodes.forEach(node => {
+            // Draw Nodes (shuffled by Z-index in 3D for correct overlapping render)
+            const renderNodes = [...nodes];
+            if (viewMode === '3D') {
+                renderNodes.sort((a, b) => b.z - a.z); // Render further nodes first
+            }
+
+            renderNodes.forEach(node => {
+                const radius = node.r * node.projScale;
+                const pulseRadius = radius + (node.pulse * 8);
+
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, node.r + (node.pulse * 6), 0, Math.PI * 2);
+                ctx.arc(node.x, node.y, Math.max(2, pulseRadius), 0, Math.PI * 2);
                 ctx.fillStyle = node.color;
                 
-                // Glow effect
-                ctx.shadowColor = node.color;
-                ctx.shadowBlur = 10 + (node.pulse * 15);
+                // Color gradient glow based on depth
+                if (viewMode === '3D') {
+                    const depthOpacity = Math.max(0.1, Math.min(0.9, (focusLength - node.z) / focusLength));
+                    ctx.fillStyle = node.color + Math.floor(depthOpacity * 255).toString(16).padStart(2, 'f');
+                    
+                    if (depthOpacity > 0.4) {
+                        ctx.shadowColor = node.color;
+                        ctx.shadowBlur = (8 + (node.pulse * 12)) * node.projScale;
+                    }
+                } else {
+                    ctx.shadowColor = node.color;
+                    ctx.shadowBlur = 8 + (node.pulse * 12);
+                }
+
                 ctx.fill();
-                ctx.shadowBlur = 0; // Reset shadow
+                ctx.shadowBlur = 0; // reset
 
-                // Label
-                ctx.fillStyle = '#f3f4f6';
-                ctx.font = 'bold 12px Inter';
-                ctx.textAlign = 'center';
-                ctx.fillText(node.label, node.x, node.y - node.r - 10);
+                // Draw Text labels for closer nodes or in 2D mode
+                if (viewMode === '2D' || node.z < 100) {
+                    ctx.fillStyle = '#f8fafc';
+                    ctx.font = `500 ${Math.max(9, 11 * node.projScale)}px Inter`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(node.label, node.x, node.y - radius - 8);
+                }
 
-                // Reduce pulse decay
+                // Decay pulse rate
                 if (node.pulse > 0) {
                     node.pulse -= 0.02;
                 }
             });
 
-            requestAnimationFrame(drawGraph);
+            requestAnimationFrame(updateAndDraw);
         }
 
-        drawGraph();
+        updateAndDraw();
 
         function triggerPulse(nodeId) {
             const node = nodes.find(n => n.id === nodeId);
@@ -421,17 +951,10 @@
             }
         }
 
-        // Live stats counters
-        let totalSavings = 0;
+        // Live metrics and state variables
         let symbolCount = 0;
         let factCount = 0;
         const activeFacts = new Set();
-
-        function updateMetricsDisplay() {
-            document.getElementById('valTokens').innerText = totalSavings + '%';
-            document.getElementById('valSymbols').innerText = symbolCount;
-            document.getElementById('valFacts').innerText = factCount;
-        }
 
         function appendLog(tag, message) {
             const logsContainer = document.getElementById('consoleLogs');
@@ -444,6 +967,7 @@
             if (tag === 'fact') tagClass = 'tag-fact';
             if (tag === 'context') tagClass = 'tag-context';
             if (tag === 'verify') tagClass = 'tag-verify';
+            if (tag === 'System') tagClass = 'tag-system';
 
             logEntry.innerHTML = `
                 <span class="log-time">[${now}]</span>
@@ -456,58 +980,113 @@
 
         function renderFactsList() {
             const listContainer = document.getElementById('rulesList');
-            if (activeFacts.size === 0) {
-                listContainer.innerHTML = `<div style="color:var(--text-secondary); font-size:14px; text-align:center; padding: 20px;">No facts or guidelines registered in localized memory.</div>`;
+            const filterText = document.getElementById('filterInput').value.toLowerCase();
+            
+            const factsToRender = Array.from(activeFacts).filter(rule => {
+                const parts = rule.split('|');
+                const factText = parts[0].toLowerCase();
+                const factScope = (parts[1] || 'global').toLowerCase();
+                return factText.includes(filterText) || factScope.includes(filterText);
+            });
+
+            if (factsToRender.length === 0) {
+                listContainer.innerHTML = `<div style="color:var(--text-secondary); font-size:13px; text-align:center; padding: 30px;">No matching guidelines registered.</div>`;
                 return;
             }
 
             listContainer.innerHTML = '';
-            Array.from(activeFacts).forEach(rule => {
+            factsToRender.forEach(rule => {
                 const parts = rule.split('|');
                 const factText = parts[0];
                 const factScope = parts[1] || 'global';
                 
                 const ruleItem = document.createElement('div');
                 ruleItem.className = 'rule-item';
+                
+                const isGlobal = factScope === 'global';
+                const badgeClass = isGlobal ? 'rule-badge global' : 'rule-badge';
+                const scopeLabel = isGlobal ? 'global' : `file:${factScope.split('/').pop()}`;
+
                 ruleItem.innerHTML = `
                     <span class="rule-text">${factText}</span>
-                    <span class="rule-scope">${factScope}</span>
+                    <span class="rule-badge ${badgeClass}" title="${factScope}">${scopeLabel}</span>
                 `;
                 listContainer.appendChild(ruleItem);
             });
         }
 
-        // Establish SSE Connection to Axum server
+        // Post Rule/Fact API handler
+        function registerDurableRule() {
+            const text = document.getElementById('ruleInput').value.trim();
+            const scope = document.getElementById('scopeSelect').value;
+
+            if (!text) {
+                alert("Rule text cannot be empty.");
+                return;
+            }
+
+            fetch('/api/facts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fact: text,
+                    scope: scope,
+                    confidence: 1.0
+                })
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('ruleInput').value = '';
+                    showToast();
+                } else {
+                    alert("Error saving rule to database.");
+                }
+            })
+            .catch(err => {
+                console.error("API error:", err);
+                alert("Failed to connect to daemon API endpoint.");
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Establish SSE Connection
         function connectSSE() {
             const sse = new EventSource('/api/stream');
             
             sse.onopen = () => {
-                document.getElementById('statusPulse').style.backgroundColor = 'var(--accent)';
-                document.getElementById('statusText').innerText = 'Connected';
-                document.getElementById('statusText').style.color = 'var(--accent)';
-                appendLog('System', 'Successfully established gRPC event stream connection.');
+                document.getElementById('statusPulse').style.backgroundColor = 'var(--accent-green)';
+                document.getElementById('statusText').innerText = 'Online';
+                document.getElementById('statusText').style.color = 'var(--accent-green)';
+                appendLog('System', 'Established gRPC background channel event connection.');
             };
 
             sse.onerror = () => {
-                document.getElementById('statusPulse').style.backgroundColor = 'var(--purple)';
-                document.getElementById('statusText').innerText = 'Disconnected';
-                document.getElementById('statusText').style.color = 'var(--purple)';
-                // Auto reconnect after 5s
+                document.getElementById('statusPulse').style.backgroundColor = 'var(--accent-pink)';
+                document.getElementById('statusText').innerText = 'Offline';
+                document.getElementById('statusText').style.color = 'var(--accent-pink)';
+                // Reconnect 5s
                 setTimeout(connectSSE, 5000);
             };
 
             sse.onmessage = (event) => {
                 try {
-                    const data = json = JSON.parse(event.data);
+                    const data = JSON.parse(event.data);
                     
                     if (data.event === 'index') {
                         triggerPulse('core-graph');
                         triggerPulse('daemon');
                         symbolCount = data.symbols;
-                        // Dynamically boost token savings based on files indexed (simulated token reduction metric)
-                        totalSavings = Math.min(95, 45 + (data.files * 8)); 
-                        appendLog('index', `Indexed repository. Found ${data.files} source files and mapped ${data.symbols} AST tokens.`);
-                        updateMetricsDisplay();
+                        document.getElementById('valSymbols').innerText = symbolCount;
+                        appendLog('index', `Scanned and indexed repository. Mapped ${data.symbols} AST symbol nodes across ${data.files} files.`);
                     }
                     
                     else if (data.event === 'fact') {
@@ -517,9 +1096,9 @@
                         if (!activeFacts.has(factKey)) {
                             activeFacts.add(factKey);
                             factCount = activeFacts.size;
+                            document.getElementById('valFacts').innerText = factCount;
                         }
-                        appendLog('fact', `Stored rule fact: "${data.fact}" [Scope: ${data.scope}]`);
-                        updateMetricsDisplay();
+                        appendLog('fact', `Stored invariant fact: "${data.fact}" [Scope: ${data.scope}]`);
                         renderFactsList();
                     }
                     
@@ -527,17 +1106,25 @@
                         triggerPulse('core-memory');
                         triggerPulse('bridge.py');
                         triggerPulse('daemon');
-                        appendLog('context', `Precision context lookup query for task: "${data.task}" [Focused files: ${data.files.join(', ')}]`);
+                        appendLog('context', `Query context lookup triggered for task: "${data.task}"`);
+                        
+                        // Parse target files into dynamic 3D leaf nodes in the tree
+                        if (data.files && data.files.length) {
+                            data.files.forEach(f => {
+                                addFileNode(f, 15);
+                                triggerPulse(f);
+                            });
+                        }
                     }
                     
                     else if (data.event === 'verify') {
                         triggerPulse('core-verify');
                         triggerPulse('daemon');
-                        const statusText = data.is_valid ? 'SUCCESS' : 'FAILED';
-                        appendLog('verify', `Verification patch check completed. Outcome: ${statusText}.`);
+                        const ok = data.is_valid ? 'PASSED' : 'FAILED';
+                        appendLog('verify', `Patch validation run finished. Outcome: ${ok}`);
                     }
                 } catch(e) {
-                    console.error("Failed to parse SSE payload", e);
+                    console.error("SSE parse error", e);
                 }
             };
         }

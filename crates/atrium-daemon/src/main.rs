@@ -4,7 +4,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::sync::broadcast;
 use tonic::{transport::Server, Request, Response, Status};
-use axum::response::IntoResponse;
+use axum::{response::IntoResponse, Json, Extension};
+use serde::Deserialize;
 
 pub mod daemon {
     tonic::include_proto!("atrium.daemon");
@@ -637,6 +638,35 @@ fn perform_update(force: bool) -> Result<(), Box<dyn std::error::Error>> {
 // -------------------------------------------------------------
 // Axum Web Server & DevUI SSE Service
 // -------------------------------------------------------------
+#[derive(Deserialize)]
+struct AddFactPayload {
+    fact: String,
+    scope: String,
+    confidence: f64,
+}
+
+async fn add_fact_handler(
+    Extension(store): Extension<Arc<MemoryStore>>,
+    Extension(tx): Extension<tokio::sync::broadcast::Sender<String>>,
+    Json(payload): Json<AddFactPayload>,
+) -> impl IntoResponse {
+    println!("Atriumd API: Registering durable fact: '{}' for scope: '{}'", payload.fact, payload.scope);
+
+    if let Err(e) = store.add_durable_fact(&payload.fact, &payload.scope, payload.confidence) {
+        return (axum::http::StatusCode::INTERNAL_SERVER_ERROR, format!("Database error: {}", e)).into_response();
+    }
+
+    // Broadcast fact to DevUI visual stream
+    let event = serde_json::json!({
+        "event": "fact",
+        "fact": payload.fact,
+        "scope": payload.scope
+    }).to_string();
+    let _ = tx.send(event);
+
+    (axum::http::StatusCode::OK, "Fact successfully registered.").into_response()
+}
+
 async fn static_file_handler(uri: axum::http::Uri) -> impl axum::response::IntoResponse {
     let mut path = uri.path().trim_start_matches('/').to_string();
     if path.is_empty() {
@@ -726,15 +756,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (tx, _rx) = broadcast::channel::<String>(100);
 
     let daemon_service = AtriumDaemon {
-        store: memory_store,
+        store: memory_store.clone(),
         tx: tx.clone(),
     };
 
     // Spin up Axum HTTP Background Server
+    let store_clone = memory_store.clone();
     let app = axum::Router::new()
         .route("/api/stream", axum::routing::get(sse_handler))
+        .route("/api/facts", axum::routing::post(add_fact_handler))
         .fallback(axum::routing::get(static_file_handler))
-        .layer(axum::Extension(tx));
+        .layer(axum::Extension(tx))
+        .layer(axum::Extension(store_clone));
 
     tokio::spawn(async move {
         println!("Atriumd: Visual DevUI dashboard starting on http://localhost:14040");
