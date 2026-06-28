@@ -62,6 +62,12 @@ atriumd
 ```
 Atrium will start its local gRPC server on port `50051`, initialize its localized SQLite memory database (`atrium_memory.db`), and serve the visual dashboard at [http://localhost:4040](http://localhost:4040).
 
+### 🤖 AI Agent Autopilot Setup (Copy-Paste to your coding agent)
+If you are pair programming with an AI agent (such as Claude Code, Cursor, Cline, or Roo Code), you can copy and paste the prompt below directly into the chat, and the agent will configure, launch, and register Atrium for you autonomously:
+
+> **Agent Prompt:**
+> "Please check if the `atriumd` daemon is running. If not, run the native installation script (or build `atriumd` from source using `cargo build --release --bin atriumd` and register it to the system PATH). Next, ensure Python 3 is installed along with the required dependencies (`grpcio` and `grpcio-tools`), and compile the gRPC protocol definitions by running `python -m grpc_tools.protoc -Iapi --python_out=api --grpc_python_out=api api/daemon.proto`. Finally, launch `atriumd` in the background, run `atriumd --index` to index the current workspace, and run `atriumd --register` to register the Atrium MCP server in all active editors (Claude Code, Cursor, Cline, Roo Code, and Continue)."
+
 ---
 
 ## 🛠️ Track 2: Systems Architecture (For Core Developers)
